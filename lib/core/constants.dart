@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 
 class fbConstants {
   fbConstants._();
-  final marginH = SizedBox(
+  static const marginH =SizedBox(
     height: 10,
   );
-  final marginW = SizedBox(
+ static const marginW = SizedBox(
     width: 10,
   );
 }
