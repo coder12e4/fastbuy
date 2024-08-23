@@ -13,7 +13,7 @@ class tabs extends ConsumerWidget {
       body: IndexedStack(
         index: currentIndex,
         children: [
-          HomePage(),
+          HomePageUser(),
           Center(child: Text('Search Page')),
           Center(child: Text('Profile Page')),
         ],

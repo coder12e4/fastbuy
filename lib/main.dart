@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
               return supportedLocales.first;
             },
             debugShowCheckedModeBanner: false,
-            home: const Registration(),
+            home: SplashScreen(),
           );
         },
       ),

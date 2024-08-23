@@ -10,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoryPage extends StatefulWidget {
   final String UserId;
-
   CategoryPage(this.UserId);
 
   @override

@@ -23,7 +23,7 @@ class SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
     animationController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
 
@@ -36,7 +36,7 @@ class SplashScreenState extends ConsumerState<SplashScreen>
         if (true) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => AdminLogin(),
+              builder: (context) => Login(),
             ),
           );
         } else {

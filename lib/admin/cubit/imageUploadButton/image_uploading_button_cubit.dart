@@ -23,17 +23,26 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
 
   Future<String?> uploadImageToStorage(File imageFile) async {
     try {
-      String fileName = 'images/${DateTime.now().millisecondsSinceEpoch}.png';
+      String fileName =
+          'images/${DateTime.now().millisecondsSinceEpoch}${imageFile.path.split('.').last}';
       Reference storageReference =
           FirebaseStorage.instance.ref().child(fileName);
 
       UploadTask uploadTask = storageReference.putFile(imageFile);
+
+      // Await the task to complete and check for errors.
       await uploadTask.whenComplete(() {
-        print("upload complete");
+        print("Upload complete");
+      }).catchError((error) {
+        // Handle any errors that occur during upload.
+        throw error;
       });
+
+      // Get the download URL if the upload is successful.
       String downloadURL = await storageReference.getDownloadURL();
       return downloadURL;
     } catch (e) {
+      // Emit the error state if something goes wrong.
       emit(ImageUploadingButtonFailed(e.toString()));
       return null;
     }
