@@ -1,18 +1,42 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 part 'image_uploading_button_state.dart';
 
 class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
   ImageUploadingButtonCubit() : super(ImageUploadingButtonInitial());
 
-  Future<File?> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  final storage =
+      FirebaseStorage.instanceFor(bucket: "gs://fastbuy-55678.appspot.com");
+  UploadTask? uploadTask;
+  final progress = 0.0;
+  String? UploadUrl;
 
+  /* Future uploadfile() async {
+    final path = "images/'${platformFile!.name}'";
+    final file = File(platformFile!.path!);
+    final ref = await storage.ref().child(path);
+
+    uploadTask = ref.putFile(file);
+
+    final snapshots = await uploadTask!.whenComplete(() {});
+    final downloadlink = snapshots.ref.getDownloadURL();
+    uploadTask = null;
+  }
+*/
+  Future<File?> pickImage(bool b) async {
+    final pickedFile;
+    if (b) {
+      pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    } else {
+      pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    }
     if (pickedFile != null) {
       return File(pickedFile.path);
     } else {
@@ -24,51 +48,112 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
   Future<String?> uploadImageToStorage(File imageFile) async {
     try {
       String fileName =
-          'images/${DateTime.now().millisecondsSinceEpoch}${imageFile.path.split('.').last}';
-      Reference storageReference =
-          FirebaseStorage.instance.ref().child(fileName);
+          'images/${DateTime.now().millisecondsSinceEpoch}.${imageFile.path.split('.').last}';
+      print(fileName);
 
-      UploadTask uploadTask = storageReference.putFile(imageFile);
+      final storageRef = storage.ref().child(fileName);
+      final metadata = SettableMetadata(contentType: "image/jpeg");
 
-      // Await the task to complete and check for errors.
-      await uploadTask.whenComplete(() {
-        print("Upload complete");
-      }).catchError((error) {
-        // Handle any errors that occur during upload.
-        throw error;
+      uploadTask = storageRef.putFile(imageFile, metadata);
+
+      uploadTask!.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+        switch (taskSnapshot.state) {
+          case TaskState.running:
+            final progress = 100.0 *
+                (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+            print("Upload is $progress% complete.");
+            break;
+          case TaskState.paused:
+            print("Upload is paused.");
+            break;
+          case TaskState.canceled:
+            print("Upload was canceled");
+            break;
+          case TaskState.error:
+            print("Upload error: ");
+            break;
+          case TaskState.success:
+            print("Upload complete.");
+            break;
+        }
       });
 
-      // Get the download URL if the upload is successful.
-      String downloadURL = await storageReference.getDownloadURL();
+      await uploadTask;
+
+      String downloadURL = await storageRef.getDownloadURL();
       return downloadURL;
     } catch (e) {
-      // Emit the error state if something goes wrong.
-      emit(ImageUploadingButtonFailed(e.toString()));
+      print(e.toString());
       return null;
     }
   }
 
-  Future<void> saveImageUrlToFirestore(String imageUrl) async {
+  Future<void> saveImageUrlToFirestore(
+      String? imageUrl, String? subjectTypeId, String subject) async {
     try {
       await FirebaseFirestore.instance.collection('images').add({
+        'category': subjectTypeId,
         'url': imageUrl,
         'uploaded_at': Timestamp.now(),
+        'subject': subject
       });
-      emit(ImageUploadingButtonSuccess());
+
+      emit(ImageUploadingButtonSuccess(UploadUrl!));
     } catch (e) {
       emit(ImageUploadingButtonFailed(e.toString()));
     }
   }
 
-  Future<File?> uploadAndSaveImage() async {
-    File? imageFile = await pickImage();
+  void showPicker(context, String name) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Gallery'),
+                      onTap: () {
+                        uploadAndSaveImage("category", name, true);
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      uploadAndSaveImage("category", name, false);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Future<void> uploadAndSaveImage(
+      String? subjectTypeId, String subject, bool b) async {
+    File? imageFile = await pickImage(b);
     if (imageFile != null) {
-      emit(ImageUploadingButtonLoading());
-      String? imageUrl = await uploadImageToStorage(imageFile);
-      print(imageUrl!);
-      await saveImageUrlToFirestore(imageUrl);
+      try {
+        emit(ImageUploadingButtonLoading(progress));
+        print(imageFile);
+        final imageUrl = await uploadImageToStorage(imageFile);
+        UploadUrl = imageUrl;
+        if (imageUrl != null) {
+          await saveImageUrlToFirestore(imageUrl, subjectTypeId, subject);
+        } else {
+          emit(ImageUploadingButtonFailed("Failed to upload image"));
+        }
+      } catch (e) {
+        print(e);
+        emit(ImageUploadingButtonFailed(e.toString()));
+      }
     } else {
-      emit(ImageUploadingButtonFailed("image null"));
+      emit(ImageUploadingButtonFailed("No image selected"));
     }
   }
 }

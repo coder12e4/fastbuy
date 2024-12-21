@@ -33,6 +33,28 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-storage.js"></script>
+<script type="text/javascript">
+    window.flutterWebRenderer = "html";
+</script>
+
+  <script src="flutter_bootstrap.js" async>
+const firebaseConfig = {
+  apiKey: "AIzaSyCYejdhk7jm7K1bRTpqQDiXlkwIPVuvKqg",
+  authDomain: "fastbuy-55678.firebaseapp.com",
+  databaseURL: "https://fastbuy-55678-default-rtdb.firebaseio.com",
+  projectId: "fastbuy-55678",
+  storageBucket: "fastbuy-55678.appspot.com",
+  messagingSenderId: "868906482031",
+  appId: "1:868906482031:web:130685f950a3cee446509a",
+  measurementId: "G-C7PVYGTG6T"
+};
+  // Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
+  </script>
 </body>
 </html>

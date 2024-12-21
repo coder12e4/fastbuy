@@ -5,9 +5,17 @@ sealed class ImageUploadingButtonState {}
 
 final class ImageUploadingButtonInitial extends ImageUploadingButtonState {}
 
-final class ImageUploadingButtonLoading extends ImageUploadingButtonState {}
+final class ImageUploadingButtonLoading extends ImageUploadingButtonState {
+  double prograss;
 
-final class ImageUploadingButtonSuccess extends ImageUploadingButtonState {}
+  ImageUploadingButtonLoading(this.prograss);
+}
+
+final class ImageUploadingButtonSuccess extends ImageUploadingButtonState {
+  final String imageUrl;
+
+  ImageUploadingButtonSuccess(this.imageUrl);
+}
 
 final class ImageUploadingButtonFailed extends ImageUploadingButtonState {
   String error;

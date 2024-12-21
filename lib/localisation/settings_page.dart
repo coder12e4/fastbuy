@@ -4,8 +4,7 @@ import 'app_localizations.dart';
 import 'cubit/locale_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
-
+  const SettingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

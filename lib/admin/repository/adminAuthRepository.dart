@@ -17,6 +17,7 @@ class adminAuthRepo extends AdminAuthRepository {
         email: authParams.email, password: authParams.password);
     User? user = userCredential.user;
     Person? person = getFirebaseuser(user);
+    user!.sendEmailVerification();
 
     final addNewShop = FirebaseFirestore.instance.collection("sellers");
 
@@ -29,7 +30,8 @@ class adminAuthRepo extends AdminAuthRepository {
           "name": authParams.name,
           "seller": authParams.seller,
           "shop address": authParams.shopAddress,
-          'userId': person!.id
+          'userId': person!.id,
+          "sellerfcm": authParams.fcm
         })
         .then((value) => print("User registration Successfull"))
         .catchError((error) => print("Failed to add user: $error"));
@@ -61,10 +63,20 @@ class AuthParams {
   String contact;
   String deliveryVehicleNo;
   String shopAddress;
+  String fcm;
   String userId;
 
-  AuthParams(this.email, this.password, this.name, this.seller, this.address,
-      this.contact, this.deliveryVehicleNo, this.shopAddress, this.userId);
+  AuthParams(
+      this.email,
+      this.password,
+      this.name,
+      this.seller,
+      this.address,
+      this.contact,
+      this.deliveryVehicleNo,
+      this.shopAddress,
+      this.fcm,
+      this.userId);
 }
 
 class LoginUser {

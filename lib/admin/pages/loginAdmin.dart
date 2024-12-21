@@ -1,11 +1,12 @@
 import 'package:fastbuy/admin/pages/shopRegistrationPage.dart';
 import 'package:fastbuy/admin/repository/adminAuthRepository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/fbtheme.dart';
-import '../../user/homepage.dart';
-import '../../user/registerationpage.dart';
+import '../../user/pages/homepage.dart';
+import '../../user/pages/registerationpage.dart';
 import '../cubit/auth_cubit.dart';
 import 'homePage/homePageAdmin.dart';
 
@@ -81,6 +82,19 @@ class _AdminLoginState extends State<AdminLogin> {
                           Text(
                             "fastbuy",
                             style: fbTextTheme.lightTxttheme.headlineLarge,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Seller",
+                            style: fbTextTheme.lightTxttheme.bodyLarge,
                           ),
                         ],
                       ),
@@ -166,8 +180,12 @@ class _AdminLoginState extends State<AdminLogin> {
                         child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                authCubit.getLoginYourShop(
-                                    email.text, password.text);
+                                FirebaseMessaging.instance
+                                    .getToken()
+                                    .then((value) {
+                                  authCubit.getLoginYourShop(
+                                      email.text, password.text, value);
+                                });
                               }
                             },
                             child: Text(
@@ -204,7 +222,10 @@ class _AdminLoginState extends State<AdminLogin> {
               } else if (state is AuthLoginFail) {
                 return Container(
                   alignment: Alignment.center,
-                  child: Text("Login failed,please enter valid credentials"),
+                  child: Text(
+                    '${state.error}',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 );
               } else {
                 return Container();

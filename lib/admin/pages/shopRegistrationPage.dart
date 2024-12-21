@@ -1,5 +1,6 @@
 import 'package:fastbuy/admin/pages/loginAdmin.dart';
 import 'package:fastbuy/admin/repository/adminAuthRepository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,7 +61,10 @@ class _registerShopPageState extends State<registerShopPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text("Register Shop"),
+                      Text(
+                        "Register Shop",
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       SizedBox(
                         height: 20,
                       ),
@@ -169,16 +173,22 @@ class _registerShopPageState extends State<registerShopPage> {
                       ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              authCubit.getRegisterYourShop(AuthParams(
-                                  textEditingController_email.text,
-                                  textEditingController_password.text,
-                                  textEditingController_name.text,
-                                  true,
-                                  textEditingController_address.text,
-                                  textEditingController_whatsappno.text,
-                                  textEditingController_vehicleNo.text,
-                                  textEditingController_shopAddress.text,
-                                  ""));
+                              //generate fcm
+                              FirebaseMessaging.instance
+                                  .getToken()
+                                  .then((fcmtoken) {
+                                authCubit.getRegisterYourShop(AuthParams(
+                                    textEditingController_email.text,
+                                    textEditingController_password.text,
+                                    textEditingController_name.text,
+                                    true,
+                                    textEditingController_address.text,
+                                    textEditingController_whatsappno.text,
+                                    textEditingController_vehicleNo.text,
+                                    textEditingController_shopAddress.text,
+                                    fcmtoken.toString(),
+                                    ""));
+                              });
                             }
                           },
                           child: Center(

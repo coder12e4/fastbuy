@@ -30,12 +30,17 @@ class CategoryCubit extends Cubit<CategoryState> {
     emit(CategorySuccess(categories));
   }
 
-  void addCategory(Category category, String userid) async {
+  void chageToAdd() {
+    emit(CategoryAddInitial());
+  }
+
+  void addCategory(Category category, String userid, String image) async {
     try {
       DocumentReference docRef = await FirebaseFirestore.instance
           .collection('categories')
           .add(category.toMap());
-      category = Category(id: docRef.id, name: category.name, userId: userid);
+      category = Category(
+          id: docRef.id, name: category.name, userId: userid, image: '');
       fetchCategories(userid);
     } catch (e) {
       print(e);

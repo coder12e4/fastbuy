@@ -6,16 +6,17 @@ class FbTheme {
   static ThemeData lightTheme = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      primaryColor: Colors.blue,
+      primaryColor: Colors.green,
       textTheme: fbTextTheme.lightTxttheme,
       scaffoldBackgroundColor: Colors.white,
       elevatedButtonTheme: fbelevatedbuttontheme.lightthem,
       inputDecorationTheme: FbTxtfieldTheme.lightinputDecorationTheme,
       cardTheme: const CardTheme(color: Colors.white));
+
   static ThemeData darkTheme = ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primaryColor: Colors.blue,
+      primaryColor: Colors.green,
       textTheme: fbTextTheme.darkTxttheme,
       scaffoldBackgroundColor: Colors.black,
       elevatedButtonTheme: fbelevatedbuttontheme.Darkthem,
@@ -50,7 +51,7 @@ class fbTextTheme {
     titleMedium: const TextStyle().copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     titleSmall: const TextStyle().copyWith(
         fontSize: 12,
@@ -71,7 +72,7 @@ class fbTextTheme {
     bodyMedium: const TextStyle().copyWith(
         fontSize: 10,
         fontWeight: FontWeight.normal,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "regular"),
     labelMedium: const TextStyle().copyWith(
         fontSize: 8,
@@ -138,10 +139,10 @@ class fbelevatedbuttontheme {
       style: ElevatedButton.styleFrom(
           elevation: 0,
           foregroundColor: Colors.white,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.green,
           disabledBackgroundColor: Colors.grey,
           disabledForegroundColor: Colors.grey,
-          side: const BorderSide(color: Colors.blue),
+          side: const BorderSide(color: Colors.green),
           padding: const EdgeInsets.symmetric(vertical: 10),
           textStyle: const TextStyle().copyWith(
               fontSize: 8, fontWeight: FontWeight.normal, color: Colors.white),
@@ -152,11 +153,11 @@ class fbelevatedbuttontheme {
       style: ElevatedButton.styleFrom(
           elevation: 0,
           foregroundColor: Colors.white,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.green,
           disabledBackgroundColor: Colors.grey,
           disabledForegroundColor: Colors.grey,
-          side: const BorderSide(color: Colors.blue),
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          side: const BorderSide(color: Colors.green),
+          padding: const EdgeInsets.all(4),
           textStyle: const TextStyle().copyWith(
               fontSize: 8, fontWeight: FontWeight.normal, color: Colors.white),
           shape:
@@ -193,7 +194,8 @@ class FbTxtfieldTheme {
   FbTxtfieldTheme._();
   static InputDecorationTheme lightinputDecorationTheme = InputDecorationTheme(
       errorMaxLines: 3,
-      prefixIconColor: Colors.white,
+      fillColor: Colors.white,
+      prefixIconColor: Colors.black,
       suffixIconColor: Colors.white,
       labelStyle: const TextStyle().copyWith(
           fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
@@ -219,7 +221,8 @@ class FbTxtfieldTheme {
 
   static InputDecorationTheme darkinputDecorationTheme = InputDecorationTheme(
       errorMaxLines: 3,
-      prefixIconColor: Colors.grey,
+      fillColor: Colors.white,
+      prefixIconColor: Colors.white,
       suffixIconColor: Colors.grey,
       labelStyle: const TextStyle().copyWith(
           fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),

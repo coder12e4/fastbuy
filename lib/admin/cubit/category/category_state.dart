@@ -15,6 +15,8 @@ final class CategorySuccess extends CategoryState {
 
 final class CategoryFail extends CategoryState {}
 
+final class CategoryAddInitial extends CategoryState {}
+
 final class CategoryAddLoading extends CategoryState {}
 
 final class CategoryAddSuccess extends CategoryState {}

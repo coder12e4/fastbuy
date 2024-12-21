@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fastbuy/admin/cubit/addProducts/productCubit/product_cubit.dart';
+import 'package:fastbuy/admin/cubit/addProducts/subCategoryCubit/subcategory_cubit.dart';
 import 'package:fastbuy/admin/cubit/auth_cubit.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,7 @@ part 'home_admin_state.dart';
 class HomeAdminCubit extends Cubit<HomeAdminState> {
   HomeAdminCubit() : super(HomeAdminInitial());
   List<Category> categories = [];
+  ProductCubit productCubit = ProductCubit();
   Future<void> getCategories(String userId) async {
     try {
       emit(HomeAdminLoading());
@@ -27,9 +30,43 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
               Category.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
 
+      emit(HomeAdminSuccess(
+        categories,
+      ));
+    } catch (e) {
+      HomeAdminFailed();
+    }
+  }
+
+  void getProducts(String categoryId, String subcategoryId) async {
+    emit(LoadProductsLoading());
+    try {
+      List<Product> products =
+          await productCubit.fetchProducts(categoryId, subcategoryId);
+      emit(LoadProductsSuccess(products));
+    } catch (e) {
+      emit(LoadProductsFailed(e.toString()));
+    }
+  }
+
+  Future<void> getSubcategoris(String userId, String categoryId) async {
+    try {
+      emit(LoadSubcategorisLoding());
+
+      final subcategoriesSnap = await FirebaseFirestore.instance
+          .collection("subcategories")
+          .where("categoryId", isEqualTo: categoryId)
+          .get();
+      List<Subcategory> subcategories = subcategoriesSnap.docs
+          .map((doc) =>
+              Subcategory.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+
       List<Product?> products = await getAllProducts(userId);
 
-      emit(HomeAdminSuccess(categories, products));
+      emit(LoadSubcategorisSuccess(
+        subcategories,
+      ));
     } catch (e) {
       HomeAdminFailed();
     }
