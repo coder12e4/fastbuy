@@ -8,6 +8,7 @@ import 'package:fastbuy/admin/cubit/auth_cubit.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../adminModels/addProductModel/addproduct.dart';
 
@@ -36,6 +37,11 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
     } catch (e) {
       HomeAdminFailed();
     }
+  }
+
+  Future<void> logout() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    await sp.clear();
   }
 
   void getProducts(String categoryId, String subcategoryId) async {

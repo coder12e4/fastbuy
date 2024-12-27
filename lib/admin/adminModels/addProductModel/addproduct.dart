@@ -144,6 +144,7 @@ class Product extends Equatable {
 class OrderModel extends Equatable {
   final String id;
   final String userId;
+  final String marchantId;
   final List<Product> products;
   final double totalPrice;
   final double discount;
@@ -155,6 +156,7 @@ class OrderModel extends Equatable {
   OrderModel({
     required this.id,
     required this.userId,
+    required this.marchantId,
     required this.products,
     required this.totalPrice,
     required this.discount,
@@ -168,6 +170,7 @@ class OrderModel extends Equatable {
     return OrderModel(
       id: id,
       userId: map['userId'],
+      marchantId: map['marchantId'],
       products: (map['products'] as List<dynamic>)
           .map((item) => Product.fromMap(item, item['id']))
           .toList(),
@@ -184,6 +187,7 @@ class OrderModel extends Equatable {
     return {
       'id': id,
       'userId': userId,
+      'marchantId': marchantId,
       'products': products.map((product) => product.toMap()).toList(),
       'totalPrice': totalPrice,
       'discount': discount,
@@ -198,6 +202,7 @@ class OrderModel extends Equatable {
   List<Object> get props => [
         id,
         userId,
+        marchantId,
         products,
         totalPrice,
         discount,

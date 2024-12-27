@@ -85,6 +85,7 @@ class _CartPageState extends State<CartPage> {
                                 OrderModel ordermodel = OrderModel(
                                     id: "",
                                     userId: widget.userId,
+                                    marchantId: products[0].userId,
                                     products: products,
                                     totalPrice: price,
                                     discount: 00,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import '../../../user/pages/loginpage.dart';
 import '../../adminModels/addProductModel/addproduct.dart';
 import '../../cubit/addProducts/productCubit/product_cubit.dart';
 import '../../cubit/addProducts/subCategoryCubit/subcategory_cubit.dart';
@@ -138,9 +139,8 @@ class _HomepageadminState extends State<Homepageadmin> {
               ),
               GestureDetector(
                 onTap: () {
-                  /*     homeUserCubit.logout().then((t) => Navigator.pushReplacement(
+                  adminCubit.logout().then((t) => Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (c) => Login())));
-             */
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,

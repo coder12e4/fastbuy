@@ -5,7 +5,6 @@ import '../../../admin/adminModels/addProductModel/addproduct.dart'; // For form
 
 class OrderItemWidget extends StatelessWidget {
   final OrderModel order;
-
   OrderItemWidget({required this.order});
 
   @override
