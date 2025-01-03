@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,10 +38,12 @@ class FirebaseApi {
           notification.body,
           NotificationDetails(
             android: AndroidNotificationDetails(
-                _androidChannel.id, _androidChannel.name,
-                channelDescription: _androidChannel.description,
-                icon: '@drawable/ic_launcher',
-                playSound: true),
+              _androidChannel.id,
+              _androidChannel.name,
+              channelDescription: _androidChannel.description,
+              icon: '@drawable/ic_launcher',
+              playSound: true,
+            ),
           ),
           payload: jsonEncode(event.toMap()));
     });

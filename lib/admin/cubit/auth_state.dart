@@ -15,7 +15,11 @@ final class AuthLoginInitial extends AuthState {}
 
 final class AuthLoginLoading extends AuthState {}
 
-final class AuthLoginSucees extends AuthState {}
+final class AuthLoginSucees extends AuthState {
+  String userId;
+
+  AuthLoginSucees(this.userId);
+}
 
 final class AuthLoginFail extends AuthState {
   String error;

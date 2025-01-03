@@ -66,8 +66,7 @@ class HomeUserCubit extends Cubit<HomeUserState> {
           .snapshots()
           .listen((querySnapshot) {
         final category = querySnapshot.docs
-            .map((doc) =>
-                Category.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+            .map((doc) => Category.fromMap(doc.data(), doc.id))
             .toList();
         emit(HomeUserCategoryProductsSucess(category));
       });

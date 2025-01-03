@@ -85,11 +85,18 @@ class CartCubit extends Cubit<CartState> {
   Future<void> addOrderAndSendNotification(OrderModel order) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? serverKey = sharedPreferences.getString("serverkey");
-    String? fcmToken = sharedPreferences.getString("sellerfcm");
+
+    final documentSnapshot = await FirebaseFirestore.instance
+        .collection('sellers') // Replace with your collection name
+        .where("userId", isEqualTo: order.marchantId)
+        .get();
+
+    var sellerDoc = documentSnapshot.docs.first;
+    String sellerfcm = sellerDoc['sellerfcm'];
+
     print("---server key----");
     print(serverKey);
     print("--fcm--");
-    print(fcmToken);
 
     final firestore = FirebaseFirestore.instance;
 
@@ -99,9 +106,23 @@ class CartCubit extends Cubit<CartState> {
 
     // Add order to Firestore
     try {
-      await firestore.collection('orders').add(order.toMap());
+      DocumentReference docRef = await FirebaseFirestore.instance
+          .collection('orders')
+          .add(order.toMap());
 
-      if (fcmToken != null) {
+      OrderModel ordermodel = OrderModel(
+          id: docRef.id,
+          userId: order.userId,
+          marchantId: order.products[0].userId,
+          products: order.products,
+          totalPrice: order.totalPrice,
+          discount: 00,
+          finalPrice: 00,
+          status: "oredred",
+          createdAt: DateTime.timestamp(),
+          updatedAt: DateTime.timestamp());
+
+      if (sellerfcm != null) {
         // Prepare headers and body for FCM notification
         final headers = {
           'Content-Type': 'application/json',
@@ -110,7 +131,7 @@ class CartCubit extends Cubit<CartState> {
 
         final body = jsonEncode({
           "message": {
-            "token": fcmToken,
+            "token": sellerfcm,
             "notification": {
               "title": "Breaking News",
               "body": "New news story available."
@@ -132,6 +153,7 @@ class CartCubit extends Cubit<CartState> {
             await http.post(Uri.parse(url), headers: headers, body: body);
 
         if (response.statusCode == 200) {
+          await saveNotificationToFirestore(ordermodel);
           print('Notification sent to user');
         } else {
           print(response.body);
@@ -143,5 +165,14 @@ class CartCubit extends Cubit<CartState> {
     } catch (e) {
       print('Failed to add order to Firestore: $e');
     }
+  }
+
+  Future<void> saveNotificationToFirestore(OrderModel order) async {
+    await FirebaseFirestore.instance.collection('notifications').add({
+      'orderId': order.id,
+      'buyyerId': order.userId,
+      'sellerId': order.products[0].userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 }

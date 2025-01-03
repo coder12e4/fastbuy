@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:fastbuy/admin/pages/products/productPage.dart';
-import 'package:fastbuy/user/pages/splashscreen.dart';
+import 'package:fastbuy/splashScreen/splashscreen.dart';
+import 'package:fastbuy/user/userCubit/loginCubit/login_user_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +57,8 @@ class MyApp extends StatelessWidget {
           create: (context) => ProductCubit(),
         ),
         BlocProvider(
-            create: (context) => AuthCubit(adminAuthRepo(), AuthInitial()))
+            create: (context) => AuthCubit(adminAuthRepo(), AuthInitial())),
+        BlocProvider(create: (context) => LoginUserCubit())
       ],
       child: BlocBuilder<LocaleCubit, ChangeLocaleState>(
         builder: (context, state) {

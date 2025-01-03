@@ -25,11 +25,15 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<dynamic> getLoginYourShop(
-      String userName, String Password, fcm) async {
+      String userName, String password, String fcm) async {
     try {
       emit(AuthLoginLoading());
-      final Person person = await authRepo.LoginAdmin(userName, Password);
+      print("FCM Token: $fcm");
 
+      // Attempt to login
+      final Person person = await authRepo.LoginAdmin(userName, password);
+
+      // Check if the user exists in 'sellers' collection
       QuerySnapshot personSnapshot = await FirebaseFirestore.instance
           .collection('sellers')
           .where('userId', isEqualTo: person.id)
@@ -41,13 +45,21 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       } else {
         Serverkey serverkey = Serverkey();
-        serverkey.getServerToken().then((valuee) async {
-          await addUserId(person.id, false, true, fcm, valuee, "", "");
+        DocumentReference docRef = personSnapshot.docs.first.reference;
+        await docRef.update({
+          'sellerfcm': fcm,
+          //'lastLoginTime': FieldValue.serverTimestamp(), // example field update
+          // Add any other fields you need to update here
         });
-        emit(AuthLoginSucees());
+        // Fetch and use the server token
+        String serverToken = await serverkey.getServerToken();
+        await addUserId(person.id, false, true, fcm, serverToken, "", "",
+            password, userName);
+
+        emit(AuthLoginSucees(person.id));
       }
     } catch (e) {
-      print(e);
+      print("Error: $e");
       emit(AuthLoginFail(e.toString()));
     }
   }
@@ -59,27 +71,32 @@ class AuthCubit extends Cubit<AuthState> {
       String? fcm,
       String? serverkey,
       String? sellerId,
-      String? sellerfcm) async {
+      String? sellerfcm,
+      String? password,
+      String? username) async {
     try {
-      SharedPreferences userId = await SharedPreferences.getInstance();
-      userId.setString("userId", userid! ?? "");
-      userId.setBool("userType", UserType! ?? false);
-      userId.setBool("islogin", isloagin! ?? false);
-      userId.setString("fcm", fcm! ?? "");
-      userId.setString("serverkey", serverkey! ?? "");
+      SharedPreferences userPref = await SharedPreferences.getInstance();
+      userPref.setString("userPref", userid! ?? "");
+      userPref.setBool("userType", UserType! ?? false);
+      userPref.setBool("islogin", isloagin! ?? false);
+      userPref.setString("fcm", fcm! ?? "");
+      userPref.setString("serverkey", serverkey! ?? "");
+      userPref.setString("password321", password! ?? "");
+      userPref.setString("username321", username! ?? "");
+
       if (UserType) {
-        userId.setString("sellerId", sellerId! ?? "");
-        userId.setString("sellerfcm", sellerfcm! ?? "");
+        userPref.setString("sellerId", sellerId! ?? "");
+        userPref.setString("sellerfcm", sellerfcm! ?? "");
       }
     } catch (e) {
       print(e);
     }
   }
 
-  Future<bool?> getBool(String key) async {
+  Future<bool?> getBool(String? key) async {
     try {
       SharedPreferences userId = await SharedPreferences.getInstance();
-      return userId.getBool(key);
+      return userId.getBool(key!) ?? false;
     } catch (e) {
       print(e);
       return false;
@@ -100,6 +117,26 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       SharedPreferences userId = await SharedPreferences.getInstance();
       return userId.getString('userId');
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
+  Future<String?> getUserName() async {
+    try {
+      SharedPreferences userId = await SharedPreferences.getInstance();
+      return userId.getString('username321');
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
+  Future<String?> getUserPassword() async {
+    try {
+      SharedPreferences userId = await SharedPreferences.getInstance();
+      return userId.getString('password321');
     } catch (e) {
       print(e);
       return "";

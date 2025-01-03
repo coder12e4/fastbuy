@@ -9,7 +9,6 @@ final class HomeAdminLoading extends HomeAdminState {}
 
 final class HomeAdminSuccess extends HomeAdminState {
   List<Category> categories;
-
   HomeAdminSuccess(this.categories);
 }
 

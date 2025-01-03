@@ -42,6 +42,7 @@ class _registerShopPageState extends State<registerShopPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: BlocProvider<AuthCubit>(
         create: (context) => authCubit,
         child: BlocListener<AuthCubit, AuthState>(

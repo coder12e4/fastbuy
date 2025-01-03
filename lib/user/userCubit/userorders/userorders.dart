@@ -21,7 +21,8 @@ class OrderItemWidget extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             SizedBox(height: 8.0),
-            Text('Total Price: \$${order.totalPrice.toStringAsFixed(2)}'),
+            Text(
+                'Total Price: \$${order.products.fold(0, (sum, products) => sum + products.price.round())}'),
             Text('Discount: \$${order.discount.toStringAsFixed(2)}'),
             Text('Final Price: \$${order.finalPrice.toStringAsFixed(2)}'),
             Text('Status: ${order.status}'),

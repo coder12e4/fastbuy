@@ -21,7 +21,7 @@ class FbTheme {
       scaffoldBackgroundColor: Colors.black,
       elevatedButtonTheme: fbelevatedbuttontheme.Darkthem,
       inputDecorationTheme: FbTxtfieldTheme.darkinputDecorationTheme,
-      cardTheme: const CardTheme(color: Colors.black));
+      cardTheme: const CardTheme(color: Colors.white));
 }
 
 class fbTextTheme {

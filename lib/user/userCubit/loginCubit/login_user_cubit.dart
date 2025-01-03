@@ -44,12 +44,19 @@ class LoginUserCubit extends Cubit<LoginUserState> {
                 .get();
             var userData = userDataSnapshot.docs.first.data();
             final String sellerId = userData['selectedSeller']['userId'];
-            final String sellerfcm = userData['selectedSeller']['sellerfcm'];
+            //not using
+            // final String sellerfcm = userData['selectedSeller']['sellerfcm'];
 
-            print("sellerId: $sellerId");
+            final documentSnapshot = await FirebaseFirestore.instance
+                .collection('sellers') // Replace with your collection name
+                .where("userId", isEqualTo: sellerId)
+                .get();
+
+            var sellerDoc = documentSnapshot.docs.first;
+            String sellerfcm = sellerDoc['sellerfcm'];
 
             await authCubit.addUserId(user.uid, true, true, fcmtoken,
-                servertoken, sellerId, sellerfcm);
+                servertoken, sellerId, sellerfcm, password, userName);
 
             emit(LoginUserSuccess(user.uid, sellerId));
           } else {

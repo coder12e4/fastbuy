@@ -56,7 +56,9 @@ class _AdminLoginState extends State<AdminLogin> {
             } else if (state is AuthLoginSucees) {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => Homepageadmin(),
+                  builder: (context) => Homepageadmin(
+                    userId: state.userId,
+                  ),
                 ),
               );
             } else if (state is AuthLoginFail) {}
@@ -183,8 +185,10 @@ class _AdminLoginState extends State<AdminLogin> {
                                 FirebaseMessaging.instance
                                     .getToken()
                                     .then((value) {
+                                  print("f c m while login");
+                                  print(value);
                                   authCubit.getLoginYourShop(
-                                      email.text, password.text, value);
+                                      email.text, password.text, value!);
                                 });
                               }
                             },
