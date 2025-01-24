@@ -41,12 +41,12 @@ class _CategoryPageState extends State<CategoryPage> {
     super.initState();
   }
 
-  void _addCategory(BuildContext context, String image) async {
+  void _addCategory(BuildContext context, String image, String? userId) async {
     if (_formKey.currentState!.validate()) {
       String? userid = await context.read<AuthCubit>().getUserId();
       final category = Category(
-          id: '', name: _nameController.text, userId: userid!, image: image);
-      context.read<CategoryCubit>().addCategory(category, userid, image);
+          id: '', name: _nameController.text, userId: userId!, image: image);
+      context.read<CategoryCubit>().addCategory(category, userId, image);
       _nameController.clear();
     }
   }
@@ -295,8 +295,8 @@ class _CategoryPageState extends State<CategoryPage> {
                               ),
                               const SizedBox(width: 16),
                               ElevatedButton(
-                                  onPressed: () =>
-                                      _addCategory(context, categoryImage!),
+                                  onPressed: () => _addCategory(
+                                      context, categoryImage!, widget.UserId),
                                   child: const Text('Add')),
                             ],
                           )

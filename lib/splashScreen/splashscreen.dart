@@ -34,12 +34,10 @@ class SplashScreenState extends State with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
     authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
-
     loginUserCubit = LoginUserCubit();
     _spashCubit = SpashCubit();
-    _spashCubit.screenDirrection();
+    _spashCubit.screenDirection();
   }
 
   @override
@@ -76,7 +74,7 @@ class SplashScreenState extends State with SingleTickerProviderStateMixin {
             } else if (state is SpashError) {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => Login(),
+                  builder: (context) => const Login(),
                 ),
               );
             }

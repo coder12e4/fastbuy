@@ -42,7 +42,10 @@ class _CartPageState extends State<CartPage> {
                 products.add(state.listCartUser[i].product);
                 price += price + double.parse(state.listCartUser[i].price);
               }
-            } else if (state is CartFail) {}
+            } else if (state is CartFail) {
+            } else if (state is BookingIsLoading) {
+            } else if (state is BookingIsSuccess) {
+            } else if (state is BookingIsFailed) {}
           },
           child: BlocBuilder<CartCubit, CartState>(
             builder: (context, state) {
@@ -109,6 +112,98 @@ class _CartPageState extends State<CartPage> {
               } else if (state is CartFail) {
                 return Container(
                   child: ErrorWidget(state.error),
+                );
+              } else if (state is BookingIsLoading) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [],
+                  ),
+                );
+              } else if (state is BookingIsSuccess) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text("Booking Success"),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(14),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                OrderModel ordermodel = OrderModel(
+                                    id: "",
+                                    userId: widget.userId,
+                                    marchantId: products[0].userId,
+                                    products: products,
+                                    totalPrice: price,
+                                    discount: 00,
+                                    finalPrice: 00,
+                                    status: "oredred",
+                                    createdAt: DateTime.timestamp(),
+                                    updatedAt: DateTime.timestamp());
+
+                                cartCubit
+                                    .addOrderAndSendNotification(ordermodel);
+                              },
+                              child: Text(
+                                "Order Now",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (state is BookingIsFailed) {
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text("Booking Success"),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(14),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                OrderModel ordermodel = OrderModel(
+                                    id: "",
+                                    userId: widget.userId,
+                                    marchantId: products[0].userId,
+                                    products: products,
+                                    totalPrice: price,
+                                    discount: 00,
+                                    finalPrice: 00,
+                                    status: "oredred",
+                                    createdAt: DateTime.timestamp(),
+                                    updatedAt: DateTime.timestamp());
+
+                                cartCubit
+                                    .addOrderAndSendNotification(ordermodel);
+                              },
+                              child: Text(
+                                "Order Now",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               } else {
                 return Container();

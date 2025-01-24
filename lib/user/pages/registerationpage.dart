@@ -24,7 +24,6 @@ class RegistrationState extends State {
   final pinTxtController = TextEditingController();
   final whatsApp1 = TextEditingController();
   final whatsApp2 = TextEditingController();
-
   final mobileNumber = TextEditingController();
   final email = TextEditingController();
 

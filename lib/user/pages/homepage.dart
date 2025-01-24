@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastbuy/core/fbtheme.dart';
+import 'package:fastbuy/user/pages/ProfilePage.dart';
 import 'package:fastbuy/user/pages/loginpage.dart';
 import 'package:fastbuy/user/pages/productview.dart';
 import 'package:fastbuy/user/userCubit/Kart_cubit/cart_cubit.dart';
@@ -467,9 +468,12 @@ class _HomePageUserState extends State<HomePageUser> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    homeUserCubit.logout().then((t) =>
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (c) => Login())));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => Profilepage(
+                                  userId: userId,
+                                )));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,

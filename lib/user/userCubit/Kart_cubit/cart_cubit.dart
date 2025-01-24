@@ -16,6 +16,7 @@ class CartCubit extends Cubit<CartState> {
   StreamSubscription? _CartSubsription;
   List<CartModel> listCartUser = [];
   int? kartLength;
+
   Future<void> getCartByuserId(String userId) async {
     emit(CartLoading());
     try {
@@ -32,6 +33,30 @@ class CartCubit extends Cubit<CartState> {
         // Emit CartSuccess state with the list of cart items
         emit(CartSuccess(categories));
       });
+    } catch (e) {
+      emit(CartFail(e.toString()));
+    }
+  }
+
+  Future<void> getCartByUserIdAndClear(String userId) async {
+    emit(CartLoading());
+    try {
+      // Fetch and clear the cart items
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("cart")
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      // Loop through the documents and delete them
+      for (var doc in querySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection("cart")
+            .doc(doc.id)
+            .delete();
+      }
+
+      // Emit CartSuccess with an empty list (cart is now cleared)
+      emit(CartSuccess([]));
     } catch (e) {
       emit(CartFail(e.toString()));
     }
@@ -90,13 +115,9 @@ class CartCubit extends Cubit<CartState> {
         .collection('sellers') // Replace with your collection name
         .where("userId", isEqualTo: order.marchantId)
         .get();
-
+    //kart state must be change
     var sellerDoc = documentSnapshot.docs.first;
     String sellerfcm = sellerDoc['sellerfcm'];
-
-    print("---server key----");
-    print(serverKey);
-    print("--fcm--");
 
     final firestore = FirebaseFirestore.instance;
 
@@ -132,10 +153,7 @@ class CartCubit extends Cubit<CartState> {
         final body = jsonEncode({
           "message": {
             "token": sellerfcm,
-            "notification": {
-              "title": "Breaking News",
-              "body": "New news story available."
-            },
+            "notification": {"title": "New Order", "body": "fbf"},
             "data": {"story_id": "story_12345"},
             "android": {
               "notification": {"click_action": "TOP_STORY_ACTIVITY"}
@@ -154,15 +172,19 @@ class CartCubit extends Cubit<CartState> {
 
         if (response.statusCode == 200) {
           await saveNotificationToFirestore(ordermodel);
+          await getCartByUserIdAndClear(order.userId);
           print('Notification sent to user');
+          emit(BookingIsSuccess());
         } else {
           print(response.body);
           print('Failed to send notification');
         }
       } else {
         print('FCM token not found for user ${order.userId}');
+        emit(BookingIsFailed());
       }
     } catch (e) {
+      emit(BookingIsFailed());
       print('Failed to add order to Firestore: $e');
     }
   }

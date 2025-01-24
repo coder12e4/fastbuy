@@ -26,47 +26,46 @@ class LoginUserCubit extends Cubit<LoginUserState> {
       FirebaseAuth firebaseAuth = FirebaseAuth.instance;
       //getServerkey
       Serverkey serverkey = Serverkey();
-      final serverToken =
-          await serverkey.getServerToken().then((servertoken) async {
-        UserCredential userCredential = await firebaseAuth
-            .signInWithEmailAndPassword(email: userName, password: password);
-        User? user = userCredential.user;
+      final servertoken = await serverkey.getServerToken();
+      UserCredential userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: userName, password: password);
+      if (userCredential.user != null) {
+        if (userCredential.user!.emailVerified) {
+          // Save user data to SharedPreferences
+          var userDataSnapshot = await FirebaseFirestore.instance
+              .collection("users")
+              .where("userId", isEqualTo: userCredential.user!.uid)
+              .limit(1)
+              .get();
+          //  var userData = userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
+          final String sellerId =
+              userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
 
-        AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
+          final documentSnapshot = await FirebaseFirestore.instance
+              .collection('sellers') // Replace with your collection name
+              .where("userId", isEqualTo: sellerId)
+              .get();
 
-        if (user != null) {
-          if (user.emailVerified) {
-            // Save user data to SharedPreferences
-            var userDataSnapshot = await FirebaseFirestore.instance
-                .collection("users")
-                .where("userId", isEqualTo: user.uid)
-                .limit(1)
-                .get();
-            var userData = userDataSnapshot.docs.first.data();
-            final String sellerId = userData['selectedSeller']['userId'];
-            //not using
-            // final String sellerfcm = userData['selectedSeller']['sellerfcm'];
+          AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
 
-            final documentSnapshot = await FirebaseFirestore.instance
-                .collection('sellers') // Replace with your collection name
-                .where("userId", isEqualTo: sellerId)
-                .get();
+          await authCubit.addUserId(
+              userCredential.user!.uid,
+              true,
+              true,
+              fcmtoken,
+              servertoken,
+              sellerId,
+              documentSnapshot.docs.first['sellerfcm'],
+              password,
+              userName);
 
-            var sellerDoc = documentSnapshot.docs.first;
-            String sellerfcm = sellerDoc['sellerfcm'];
-
-            await authCubit.addUserId(user.uid, true, true, fcmtoken,
-                servertoken, sellerId, sellerfcm, password, userName);
-
-            emit(LoginUserSuccess(user.uid, sellerId));
-          } else {
-            emit(
-                LoginUserFail("Email not verified. Please verify your email."));
-          }
+          emit(LoginUserSuccess(userCredential.user!.uid, sellerId));
         } else {
-          emit(LoginUserFail("User not found. Please check your credentials."));
+          emit(LoginUserFail("Email not verified. Please verify your email."));
         }
-      });
+      } else {
+        emit(LoginUserFail("User not found. Please check your credentials."));
+      }
     } on FirebaseAuthException catch (e) {
       // Handle specific Firebase exceptions
       if (e.code == 'user-not-found') {
@@ -80,8 +79,6 @@ class LoginUserCubit extends Cubit<LoginUserState> {
       }
     } catch (e) {
       emit(LoginUserFail("An unexpected error occurred: $e"));
-    } catch (e) {
-      print(e);
     }
   }
 
@@ -92,7 +89,7 @@ class LoginUserCubit extends Cubit<LoginUserState> {
     try {
       UserCredential? userCredential =
           await auth.createUserWithEmailAndPassword(
-              email: userModel.UserName, password: userModel.Password);
+              email: userModel.userName!, password: userModel.password!);
       user = userCredential.user!;
 
       user.sendEmailVerification();
@@ -103,21 +100,24 @@ class LoginUserCubit extends Cubit<LoginUserState> {
     final UserData = FirebaseFirestore.instance.collection("users");
 
     UserData.add({
-      "userName": userModel.UserName,
-      "password": userModel.Password,
-      'houseName': userModel.HouseName,
-      'homeNo': userModel.HomeNo,
+      "userName": userModel.userName,
+      "password": userModel.password,
+      'houseName': userModel.houseName,
+      'homeNo': userModel.homeNo,
       'location': userModel.location,
-      'district': userModel.District,
-      'pin': userModel.District,
+      'district': userModel.district,
+      'pin': userModel.district,
       'whatsAppNo': userModel.whatsAppNo,
-      'contactNo2': userModel.ContactNo2,
+      'contactNo2': userModel.contactNo2,
       'userId': user!.uid,
-      'selectedSeller': userModel.shopmo.toJson(),
+      'selectedSeller': userModel.shopmo!.toJson(),
+      'street': userModel.street,
+      'place': userModel.place,
+      'locality': userModel.locality,
       'lat': userModel.latitude,
       'long': userModel.longitude
     }).then((value) {
-      emit(LoginUserSuccess(user!.uid, userModel.shopmo.userId!));
+      emit(LoginUserSuccess(user!.uid, userModel.shopmo!.userId!));
     }).catchError((error) {
       emit(LoginUserFail(error.toString()));
     });

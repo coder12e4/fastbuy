@@ -16,79 +16,94 @@ part 'spash_state.dart';
 class SpashCubit extends Cubit<SpashState> {
   SpashCubit() : super(SpashInitial());
   adminAuthRepo authRepo = adminAuthRepo();
+  AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  void screenDirrection() async {
+  void screenDirection() async {
     emit(SpashLoding());
     try {
-      AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
-      bool? islogins = await authCubit.getBool('islogin');
-      bool? userType = await authCubit.getBool('userType');
-      String? password = await authCubit.getUserPassword();
-      String? username = await authCubit.getUserName();
+      final islogins = await authCubit.getBool('islogin');
 
       if (islogins != null && islogins) {
-        if (userType!) {
-          FirebaseMessaging.instance.getToken().then((fcmtoken) {
-            userLogin(username!, password!, fcmtoken!);
-          });
+        // Execute multiple asynchronous tasks in parallel
+        final results = await Future.wait([
+          authCubit.getBool('userType'),
+          authCubit.getUserPassword(),
+          authCubit.getUserName(),
+          FirebaseMessaging.instance.getToken(),
+        ]);
+
+        final userType = results[0] as bool?;
+        final password = results[1] as String?;
+        final username = results[2] as String?;
+        final fcmToken = results[3] as String?;
+
+        if (userType == true && username != null && password != null) {
+          userLogin(username, password, fcmToken);
+        } else if (userType == false && username != null && password != null) {
+          getLoginYourShop(username, password, fcmToken!);
         } else {
-          FirebaseMessaging.instance.getToken().then((fcmtoken) {
-            getLoginYourShop(username!, password!, fcmtoken!);
-          });
+          emit(SpashError());
         }
       } else {
         emit(SpashError());
       }
     } catch (e) {
+      emit(SpashError());
       debugPrint(e.toString());
     }
   }
 
-  Future<dynamic> getLoginYourShop(
+  Future<void> getLoginYourShop(
       String userName, String password, String fcm) async {
     try {
-      final Person person = await authRepo.LoginAdmin(userName, password);
-      QuerySnapshot personSnapshot = await FirebaseFirestore.instance
+      // Fetch the admin user and the seller's document concurrently
+      final personFuture = authRepo.LoginAdmin(userName, password);
+      final sellerQueryFuture = FirebaseFirestore.instance
           .collection('sellers')
-          .where('userId', isEqualTo: person.id)
+          .where('userId', isEqualTo: (await personFuture).id)
           .limit(1)
           .get();
 
-      if (personSnapshot.docs.isEmpty) {
-        return;
-      } else {
-        DocumentReference docRef = personSnapshot.docs.first.reference;
-        await docRef.update({
-          'sellerfcm': fcm,
-        });
+      // Resolve both Futures
+      final person = await personFuture;
+      final sellerQuery = await sellerQueryFuture;
 
+      // Check if the seller exists
+      if (sellerQuery.docs.isNotEmpty) {
+        // Update the FCM token for the seller
+        final docRef = sellerQuery.docs.first.reference;
+        await docRef.update({'sellerfcm': fcm});
+
+        // Emit success with the person ID
         emit(SpashAdminSuccess(person.id));
+      } else {
+        emit(SpashError()); // Emit error if no seller found
       }
     } catch (e) {
-      print("Error: $e");
-      emit(SpashError());
+      debugPrint("Error in getLoginYourShop: $e");
+      emit(SpashError()); // Emit error on failure
     }
   }
 
   Future<void> userLogin(
-      String userName, String password, String fcmtoken) async {
+      String? userName, String? password, String? fcmtoken) async {
     try {
-      FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-      UserCredential userCredential = await firebaseAuth
-          .signInWithEmailAndPassword(email: userName, password: password);
-      User? user = userCredential.user;
-      if (user != null) {
-        if (user.emailVerified) {
+      UserCredential? userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: userName!, password: password!);
+
+      if (userCredential.user != null) {
+        if (userCredential.user!.emailVerified) {
           // Save user data to SharedPreferences
           var userDataSnapshot = await FirebaseFirestore.instance
               .collection("users")
-              .where("userId", isEqualTo: user.uid)
+              .where("userId", isEqualTo: userCredential.user!.uid)
               .limit(1)
               .get();
-          var userData = userDataSnapshot.docs.first.data();
-          final String sellerId = userData['selectedSeller']['userId'];
-
-          emit(SpashSuccess(user.uid, sellerId));
+          //var userData = userDataSnapshot.docs.first.data();
+          final String sellerId =
+              userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
+          emit(SpashSuccess(userCredential.user!.uid, sellerId));
         } else {}
       } else {}
     } on FirebaseAuthException catch (e) {
@@ -106,31 +121,47 @@ class SpashCubit extends Cubit<SpashState> {
   }
 
   Future<void> addUserId(
-      String? userid,
-      bool? UserType,
-      bool? isloagin,
+      String? userId,
+      bool? userType,
+      bool? isLogin,
       String? fcm,
-      String? serverkey,
+      String? serverKey,
       String? sellerId,
-      String? sellerfcm,
+      String? sellerFcm,
       String? password,
       String? username) async {
     try {
-      SharedPreferences userPref = await SharedPreferences.getInstance();
-      userPref.setString("userPref", userid! ?? "");
-      userPref.setBool("userType", UserType! ?? false);
-      userPref.setBool("islogin", isloagin! ?? false);
-      userPref.setString("fcm", fcm! ?? "");
-      userPref.setString("serverkey", serverkey! ?? "");
-      userPref.setString("password321", password! ?? "");
-      userPref.setString("username321", username! ?? "");
+      final userPref = await SharedPreferences.getInstance();
 
-      if (UserType) {
-        userPref.setString("sellerId", sellerId! ?? "");
-        userPref.setString("sellerfcm", sellerfcm! ?? "");
+      // Collect all key-value pairs into a map
+      final userData = {
+        "userPref": userId ?? "",
+        "userType": userType ?? false,
+        "islogin": isLogin ?? false,
+        "fcm": fcm ?? "",
+        "serverkey": serverKey ?? "",
+        "password321": password ?? "",
+        "username321": username ?? "",
+      };
+
+      // Add seller-specific data if userType is true
+      if (userType == true) {
+        userData.addAll({
+          "sellerId": sellerId ?? "",
+          "sellerfcm": sellerFcm ?? "",
+        });
+      }
+
+      // Batch write all data to SharedPreferences
+      for (final entry in userData.entries) {
+        if (entry.value is String) {
+          await userPref.setString(entry.key, entry.value as String);
+        } else if (entry.value is bool) {
+          await userPref.setBool(entry.key, entry.value as bool);
+        }
       }
     } catch (e) {
-      print(e);
+      debugPrint("Error in addUserId: $e");
     }
   }
 }
