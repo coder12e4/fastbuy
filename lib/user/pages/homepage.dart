@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastbuy/core/fbtheme.dart';
-import 'package:fastbuy/user/pages/ProfilePage.dart';
+import 'package:fastbuy/user/pages/Profile/ProfilePage.dart';
 import 'package:fastbuy/user/pages/loginpage.dart';
 import 'package:fastbuy/user/pages/productview.dart';
 import 'package:fastbuy/user/userCubit/Kart_cubit/cart_cubit.dart';
@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import '../../admin/adminModels/addProductModel/addproduct.dart';
 import '../../core/constants.dart';
+import '../../core/widgets/emptyoralert.dart';
 import 'kartpage.dart';
 
 import 'package:flutter/material.dart';
@@ -339,6 +340,9 @@ class _HomePageUserState extends State<HomePageUser> {
   int CartCount = 0;
   int _selectedIndex = 0;
   List<OrderModel> orderlist = [];
+  bool isGridView = false;
+  bool isGridViewSubCategory = false;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -673,6 +677,7 @@ class _HomePageUserState extends State<HomePageUser> {
                 } else if (state is HomeUserCategoryProductsFail) {
                 } else if (state is HomeUsersubCategoryProductsLoading) {
                 } else if (state is HomeUsersubCategoryProductsSucess) {
+                  isGridView = false;
                   listSubCategoris = state.subcategories;
                 } else if (state is HomeUsersubCategoryProductsFail) {
                 } else if (state is HomeUserProductsLoading) {
@@ -681,6 +686,8 @@ class _HomePageUserState extends State<HomePageUser> {
                   listProducts = state.products;
                   print(listProducts.length);
                   int? k = cartCubit.kartLength;
+                  isGridView = false;
+                  isGridViewSubCategory = false;
                   print(k);
                 } else if (state is HomeUserProductsFail) {
                 } else if (state is UserOrderLoading) {
@@ -766,52 +773,62 @@ class _HomePageUserState extends State<HomePageUser> {
                                           scrollDirection: Axis.horizontal,
                                           itemCount: listCategoris.length,
                                           itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                subcategoryCubit
-                                                    .GetAllSubCategoriesById(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(4),
-                                                margin: EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                    border: Border.all(
-                                                        color: Colors.white,
-                                                        width: 1)),
-                                                child: Column(children: [
-                                                  Text(
-                                                    listCategoris[index].name,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium,
-                                                  ),
-                                                  Container(
-                                                    width: 40,
-                                                    alignment: Alignment.center,
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            left: 8, right: 8),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4)),
-                                                    child: Image.network(
-                                                      listCategoris[index]
-                                                          .image,
-                                                      fit: BoxFit.fill,
-                                                      height: 40,
-                                                      width: 40,
+                                            if (listCategoris.isEmpty) {
+                                              return const Center(
+                                                child: EmptyOrAlert(
+                                                  empty: true,
+                                                ),
+                                              );
+                                            } else {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  subcategoryCubit
+                                                      .GetAllSubCategoriesById(
+                                                          listCategoris[index]
+                                                              .id);
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.all(4),
+                                                  margin: EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              4),
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 1)),
+                                                  child: Column(children: [
+                                                    Text(
+                                                      listCategoris[index].name,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium,
                                                     ),
-                                                  ),
-                                                ]),
-                                              ),
-                                            );
+                                                    Container(
+                                                      width: 40,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              left: 8,
+                                                              right: 8),
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4)),
+                                                      child: Image.network(
+                                                        listCategoris[index]
+                                                            .image,
+                                                        fit: BoxFit.fill,
+                                                        height: 40,
+                                                        width: 40,
+                                                      ),
+                                                    ),
+                                                  ]),
+                                                ),
+                                              );
+                                            }
                                           }),
                                     ),
                                   ),
@@ -908,225 +925,214 @@ class _HomePageUserState extends State<HomePageUser> {
                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 4),
                                 itemBuilder: (constex, intex) {
-                                  return GestureDetector(
-                                    onTap: () {},
-                                    child: Card(
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            child: Text("demo image"),
-                                          ),
-                                          Text(
-                                            listProducts[intex].name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                          )
-                                        ],
+                                  if (listProducts.isEmpty) {
+                                    return const Center(
+                                      child: EmptyOrAlert(empty: true),
+                                    );
+                                  } else {
+                                    return GestureDetector(
+                                      onTap: () {},
+                                      child: Card(
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              child: Text("demo image"),
+                                            ),
+                                            Text(
+                                              listProducts[intex].name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 }))
                       ],
                     );
                   } else if (state is HomeUserCategoryProductsLoading) {
-                    return Column(
-                      children: [
-                        Container(
-                          height: 100,
-                          color: FbColors.primaryColor,
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Row(
-                                children: [
-                                  TextField(
-                                    controller: _searchController,
-                                    decoration: InputDecoration(
-                                        hintText: 'Search...',
-                                        border: InputBorder.none,
-                                        hintStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _searchQuery = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 80,
-                                    child: const Expanded(
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
+                    return Container(
+                      height: 90,
+                      color: FbColors.primaryColor,
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 4,
                           ),
-                        ),
-                        Expanded(
-                            child: GridView.builder(
-                                itemCount: listProducts.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4),
-                                itemBuilder: (constex, intex) {
-                                  return GestureDetector(
-                                    onTap: () {},
-                                    child: Card(
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            child: Text("demo image"),
-                                          ),
-                                          Text(
-                                            listProducts[intex].name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }))
-                      ],
+                          Search(),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                        ],
+                      ),
                     );
                   } else if (state is HomeUserCategoryProductsSucess) {
-                    return Column(
-                      children: [
-                        Container(
-                          height: 180,
-                          color: FbColors.primaryColor,
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    return Column(children: [
+                      Container(
+                        height: 90,
+                        color: FbColors.primaryColor,
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Search(),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(
-                                height: 4,
+                              const Text(
+                                "Categories",
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w800),
                               ),
-                              Search(),
-                              const SizedBox(
-                                height: 12,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isGridView =
+                                          !isGridView; // Toggle between views
+                                    });
+                                  },
+                                  child: Text(
+                                      isGridView ? "View as List" : "View All"),
+                                ),
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 94,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .fetchSubCategories(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listCategoris[index].name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              )
                             ],
                           ),
-                        ),
-                        Expanded(
-                            child: GridView.builder(
-                                itemCount: listProducts.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4),
-                                itemBuilder: (constex, intex) {
-                                  return GestureDetector(
-                                    onTap: () {},
-                                    child: Card(
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            child: Text("demo image"),
-                                          ),
-                                          Text(
-                                            listProducts[intex].name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                          )
-                                        ],
-                                      ),
+
+                          // Animated Container
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            height: isGridView
+                                ? 120
+                                : 100, // Adjust height for smooth transition
+                            child: isGridView
+                                ? GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4, // Number of columns
+                                      crossAxisSpacing: 2,
+                                      mainAxisSpacing: 2,
                                     ),
-                                  );
-                                }))
-                      ],
-                    );
+                                    itemCount: listCategoris.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          homeUserCubit.fetchSubCategories(
+                                              listCategoris[index].id);
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(4),
+                                          child: Column(children: [
+                                            Container(
+                                              width: 60,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 1)),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(60),
+                                                child: Image.network(
+                                                  listCategoris[index].image,
+                                                  fit: BoxFit.fill,
+                                                  height: 60,
+                                                  width: 60,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 4,
+                                            ),
+                                            Text(listCategoris[index].name,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w900)),
+                                          ]),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: listCategoris.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          homeUserCubit.fetchSubCategories(
+                                              listCategoris[index].id);
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(4),
+                                          child: Column(children: [
+                                            Container(
+                                              width: 60,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 1)),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(60),
+                                                child: Image.network(
+                                                  listCategoris[index].image,
+                                                  fit: BoxFit.fill,
+                                                  height: 60,
+                                                  width: 60,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 4,
+                                            ),
+                                            Text(listCategoris[index].name,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w900)),
+                                          ]),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      )
+                    ]);
                   } else if (state is HomeUserCategoryProductsFail) {
                     return Container();
                   } else if (state is HomeUsersubCategoryProductsLoading) {
                     return Column(
                       children: [
                         Container(
-                          height: 270,
+                          height: 90,
                           color: FbColors.primaryColor,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Column(
@@ -1140,78 +1146,162 @@ class _HomePageUserState extends State<HomePageUser> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .fetchSubCategories(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
+                            ],
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridView =
+                                            !isGridView; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridView
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridView
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        if (listCategoris.isEmpty) {
+                                          return const Center(
+                                            child: EmptyOrAlert(empty: true),
+                                          );
+                                        } else {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              homeUserCubit.fetchSubCategories(
+                                                  listCategoris[index].id);
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.all(4),
+                                              child: Column(children: [
+                                                Container(
+                                                  width: 60,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               60),
-                                                      child: Image.network(
-                                                        listCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 1)),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    child: Image.network(
+                                                      listCategoris[index]
+                                                          .image,
+                                                      fit: BoxFit.fill,
+                                                      height: 60,
+                                                      width: 60,
                                                     ),
                                                   ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listCategoris[index].name,
-                                                      style: TextStyle(
+                                                ),
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Text(listCategoris[index].name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w900)),
+                                              ]),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        if (listCategoris.isEmpty) {
+                                          return const Center(
+                                            child: EmptyOrAlert(empty: true),
+                                          );
+                                        } else {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              homeUserCubit.fetchSubCategories(
+                                                  listCategoris[index].id);
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.all(4),
+                                              child: Column(children: [
+                                                Container(
+                                                  width: 60,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              60),
+                                                      border: Border.all(
                                                           color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
+                                                          width: 1)),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    child: Image.network(
+                                                      listCategoris[index]
+                                                          .image,
+                                                      fit: BoxFit.fill,
+                                                      height: 60,
+                                                      width: 60,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Text(listCategoris[index].name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w900)),
+                                              ]),
+                                            ),
+                                          );
+                                        }
+                                      },
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 80,
-                                    child: const Expanded(
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const Expanded(
                             child: Center(
@@ -1223,7 +1313,7 @@ class _HomePageUserState extends State<HomePageUser> {
                     return Column(
                       children: [
                         Container(
-                          height: 270,
+                          height: 90,
                           color: FbColors.primaryColor,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Column(
@@ -1237,128 +1327,308 @@ class _HomePageUserState extends State<HomePageUser> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .fetchSubCategories(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listCategoris[index].name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listSubCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .GetProductsbycatogorysubcategory(
-                                                        listCategoris[0].id,
-                                                        listSubCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listSubCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listSubCategoris[index]
-                                                          .name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              )
                             ],
                           ),
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridView =
+                                            !isGridView; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridView
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridView
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Sub Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridViewSubCategory =
+                                            !isGridViewSubCategory; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridViewSubCategory
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridViewSubCategory
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        if (listCategoris.isEmpty) {
+                                          return const EmptyOrAlert(
+                                              empty: true);
+                                        } else {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              homeUserCubit
+                                                  .GetProductsbycatogorysubcategory(
+                                                      listCategoris[0].id,
+                                                      listSubCategoris[index]
+                                                          .id);
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.all(4),
+                                              child: Column(children: [
+                                                Container(
+                                                  width: 60,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              60),
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 1)),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    child: Image.network(
+                                                      listSubCategoris[index]
+                                                          .image,
+                                                      fit: BoxFit.fill,
+                                                      height: 60,
+                                                      width: 60,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Text(
+                                                    listSubCategoris[index]
+                                                        .name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w900)),
+                                              ]),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        if (listSubCategoris.isEmpty) {
+                                          return const EmptyOrAlert(
+                                              empty: true);
+                                        } else {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              homeUserCubit
+                                                  .GetProductsbycatogorysubcategory(
+                                                      listCategoris[0].id,
+                                                      listSubCategoris[index]
+                                                          .id);
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.all(4),
+                                              child: Column(children: [
+                                                Container(
+                                                  width: 60,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              60),
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 1)),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    child: Image.network(
+                                                      listSubCategoris[index]
+                                                          .image,
+                                                      fit: BoxFit.fill,
+                                                      height: 60,
+                                                      width: 60,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Text(
+                                                    listSubCategoris[index]
+                                                        .name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w900)),
+                                              ]),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                            ),
+                          ],
                         ),
                       ],
                     );
@@ -1370,7 +1640,7 @@ class _HomePageUserState extends State<HomePageUser> {
                     return Column(
                       children: [
                         Container(
-                          height: 270,
+                          height: 90,
                           color: FbColors.primaryColor,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Column(
@@ -1384,140 +1654,298 @@ class _HomePageUserState extends State<HomePageUser> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .fetchSubCategories(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listCategoris[index].name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listSubCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .GetProductsbycatogorysubcategory(
-                                                        listCategoris[0].id,
-                                                        listSubCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listSubCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listSubCategoris[index]
-                                                          .name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),
-                        const Expanded(
-                            child: Center(
-                          child: CircularProgressIndicator(),
-                        ))
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridView =
+                                            !isGridView; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridView
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridView
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Sub Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridViewSubCategory =
+                                            !isGridViewSubCategory; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridViewSubCategory
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridViewSubCategory
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit
+                                                .GetProductsbycatogorysubcategory(
+                                                    listCategoris[0].id,
+                                                    listSubCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listSubCategoris[index]
+                                                        .image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listSubCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit
+                                                .GetProductsbycatogorysubcategory(
+                                                    listCategoris[0].id,
+                                                    listSubCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listSubCategoris[index]
+                                                        .image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listSubCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
                       ],
                     );
                   } else if (state is HomeUserProductsSuc) {
                     return Column(
                       children: [
                         Container(
-                          height: 270,
+                          height: 90,
                           color: FbColors.primaryColor,
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Column(
@@ -1531,128 +1959,290 @@ class _HomePageUserState extends State<HomePageUser> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .fetchSubCategories(
-                                                        listCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listCategoris[index].name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    child: Expanded(
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: listSubCategoris.length,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                homeUserCubit
-                                                    .GetProductsbycatogorysubcategory(
-                                                        listCategoris[0].id,
-                                                        listSubCategoris[index]
-                                                            .id);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(4),
-                                                child: Column(children: [
-                                                  Container(
-                                                    width: 60,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(60),
-                                                        border: Border.all(
-                                                            color: Colors.white,
-                                                            width: 1)),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              60),
-                                                      child: Image.network(
-                                                        listSubCategoris[index]
-                                                            .image,
-                                                        fit: BoxFit.fill,
-                                                        height: 60,
-                                                        width: 60,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 4,
-                                                  ),
-                                                  Text(
-                                                      listSubCategoris[index]
-                                                          .name,
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w900)),
-                                                ]),
-                                              ),
-                                            );
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridView =
+                                            !isGridView; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridView
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridView
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit.fetchSubCategories(
+                                                listCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listCategoris[index].image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Sub Categories",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isGridViewSubCategory =
+                                            !isGridViewSubCategory; // Toggle between views
+                                      });
+                                    },
+                                    child: Text(isGridViewSubCategory
+                                        ? "View as List"
+                                        : "View All"),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Animated Container
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              height: isGridView
+                                  ? 120
+                                  : 100, // Adjust height for smooth transition
+                              child: isGridViewSubCategory
+                                  ? GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4, // Number of columns
+                                        crossAxisSpacing: 2,
+                                        mainAxisSpacing: 2,
+                                      ),
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit
+                                                .GetProductsbycatogorysubcategory(
+                                                    listCategoris[0].id,
+                                                    listSubCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listSubCategoris[index]
+                                                        .image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listSubCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listSubCategoris.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            homeUserCubit
+                                                .GetProductsbycatogorysubcategory(
+                                                    listCategoris[0].id,
+                                                    listSubCategoris[index].id);
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(4),
+                                            child: Column(children: [
+                                              Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            60),
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 1)),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  child: Image.network(
+                                                    listSubCategoris[index]
+                                                        .image,
+                                                    fit: BoxFit.fill,
+                                                    height: 60,
+                                                    width: 60,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(listSubCategoris[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w900)),
+                                            ]),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
                         ),
                         Expanded(
                           child: GridView.builder(
@@ -1666,92 +2256,98 @@ class _HomePageUserState extends State<HomePageUser> {
                                   1.0, // Ensures a square grid item, adjust as needed
                             ),
                             itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return DropdownDialog(
-                                          listProducts[index],
-                                          cartCubit,
-                                          userId,
-                                          homeUserCubit,
-                                          sellerId!);
-                                    },
-                                  );
-                                },
-                                child: SizedBox(
-                                  height:
-                                      100, // Set the desired height for the grid item
-                                  child: Card(
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 110,
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                height: 70,
-                                                width: 70,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4.0),
-                                                  child: Image.network(
-                                                    listProducts[index].image,
-                                                    fit: BoxFit.fitHeight,
+                              if (listProducts.isEmpty) {
+                                return EmptyOrAlert(empty: true);
+                              } else {
+                                return GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return DropdownDialog(
+                                            listProducts[index],
+                                            cartCubit,
+                                            userId,
+                                            homeUserCubit,
+                                            sellerId!);
+                                      },
+                                    );
+                                  },
+                                  child: SizedBox(
+                                    height:
+                                        100, // Set the desired height for the grid item
+                                    child: Card(
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 110,
+                                            alignment: Alignment.center,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  height: 70,
+                                                  width: 70,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            4.0),
+                                                    child: Image.network(
+                                                      listProducts[index].image,
+                                                      fit: BoxFit.fitHeight,
+                                                    ),
                                                   ),
                                                 ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  listProducts[index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                                Text(
+                                                  listProducts[index]
+                                                      .price
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10),
+                                                  topRight: Radius.circular(10),
+                                                ),
                                               ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                listProducts[index].name,
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              Text(
+                                              child: Text(
                                                 listProducts[index]
                                                     .price
                                                     .toString(),
                                                 style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              borderRadius: BorderRadius.only(
-                                                bottomLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              listProducts[index]
-                                                  .price
-                                                  .toString(),
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             },
                           ),
                         )

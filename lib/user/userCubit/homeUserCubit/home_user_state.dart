@@ -34,7 +34,6 @@ final class HomeUsersubCategoryProductsFail extends HomeUserState {
   HomeUsersubCategoryProductsFail(this.error);
 }
 
-//
 final class HomeUserCategoryProductsLoading extends HomeUserState {}
 
 final class HomeUserCategoryProductsSucess extends HomeUserState {
@@ -53,7 +52,6 @@ final class HomeUserCategoryProductsFail extends HomeUserState {
   HomeUserCategoryProductsFail(this.error);
 }
 
-//
 final class HomeUserProductsLoading extends HomeUserState {}
 
 final class HomeUserProductsSuc extends HomeUserState {

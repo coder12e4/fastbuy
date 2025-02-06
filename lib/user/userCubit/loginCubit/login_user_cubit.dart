@@ -38,12 +38,11 @@ class LoginUserCubit extends Cubit<LoginUserState> {
               .limit(1)
               .get();
           //  var userData = userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
-          final String sellerId =
-              userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
-
           final documentSnapshot = await FirebaseFirestore.instance
               .collection('sellers') // Replace with your collection name
-              .where("userId", isEqualTo: sellerId)
+              .where("userId",
+                  isEqualTo: userDataSnapshot.docs.first
+                      .data()['selectedSeller']['userId'])
               .get();
 
           AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
@@ -54,12 +53,12 @@ class LoginUserCubit extends Cubit<LoginUserState> {
               true,
               fcmtoken,
               servertoken,
-              sellerId,
+              userDataSnapshot.docs.first.data()['selectedSeller']['userId'],
               documentSnapshot.docs.first['sellerfcm'],
               password,
               userName);
-
-          emit(LoginUserSuccess(userCredential.user!.uid, sellerId));
+          emit(LoginUserSuccess(userCredential.user!.uid,
+              userDataSnapshot.docs.first.data()['selectedSeller']['userId']));
         } else {
           emit(LoginUserFail("Email not verified. Please verify your email."));
         }

@@ -60,14 +60,31 @@ class FirebaseApi {
     await platform?.createNotificationChannel(_androidChannel);
   }
 
-  Future<void> initNotifications() async {
+  /*Future<void> initNotifications() async {
     await _firebasemessageing.requestPermission();
     await FirebaseMessaging.instance.setAutoInitEnabled(true);
-    final fcmToken = await _firebasemessageing.getToken();
-    print("token --  $fcmToken");
-    initPushNotifications();
-    initLocalNotifications();
+    //final fcmToken = await _firebasemessageing.getToken();
+    // print("token --  $fcmToken");
+    await initPushNotifications();
+    await initLocalNotifications();
     FirebaseMessaging.onBackgroundMessage(
         (message) => handleBackgroudMessage(message));
+  }
+  */
+
+  Future<void> initNotifications() async {
+    try {
+      await Future.wait([
+        _firebasemessageing.requestPermission(),
+        FirebaseMessaging.instance.setAutoInitEnabled(true),
+        initPushNotifications(),
+        initLocalNotifications(),
+      ]);
+
+      FirebaseMessaging.onBackgroundMessage(
+          (message) => handleBackgroudMessage(message));
+    } catch (e) {
+      print("Error initializing notifications: $e");
+    }
   }
 }

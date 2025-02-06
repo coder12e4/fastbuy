@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 
 import '../../Models/UserModel.dart';
@@ -35,6 +39,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  void editProfileInitial() {
+    emit(EditProfileInitial());
+  }
+
   Future<void> UpdateProfile(String UserId) async {
     emit(EditProfileLoading());
     try {
@@ -54,7 +62,6 @@ class ProfileCubit extends Cubit<ProfileState> {
         'pin': "up",
         'whatsAppNo': "",
         'contactNo2': "",
-        'selectedSeller': "",
         'street': "",
         'place': "",
         'locality': " ",
@@ -66,5 +73,56 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (e) {
       emit(EditProfileFail());
     }
+  }
+
+  Future<Position?> getCurrentLocationDetails() async {
+    String address = "Unable to get location";
+    Placemark? place;
+    Position? position;
+    try {
+      // Check if location services are enabled
+
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Location services are not enabled, return an appropriate message
+        String error =
+            "Location services are disabled. Please enable them to get location details.";
+      }
+      // Check for location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied, return an appropriate message
+          String error =
+              "Location permissions are denied. Please grant permissions to get location details.";
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        // Permissions are denied forever, return an appropriate message
+        String error =
+            "Location permissions are permanently denied. We cannot request permissions.";
+      }
+      // Get the current position
+
+      position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best)
+          .timeout(Duration(seconds: 30));
+
+      // Get the address from the coordinates
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        place = placemarks[0];
+      }
+    } on TimeoutException {
+    } catch (e) {
+      // Handle exceptions
+      print("Error occurred while getting location: $e");
+    }
+    return position;
   }
 }

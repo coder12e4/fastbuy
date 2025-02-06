@@ -22,20 +22,28 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // status bar color
   ));
-  await Firebase.initializeApp(
-    name: "fastbuy",
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyBi-lX5Qe0a7dquyxqzIJcvz7vBCCNiYBs",
-      appId: "1:868906482031:android:a5fc441b5ecc8a3d46509a",
-      messagingSenderId: "868906482031",
-      projectId: "fastbuy-55678",
-      storageBucket: "com.zeocodes.fastbuy",
-    ),
-  );
 
-  await FirebaseApi().initNotifications();
+  try {
+    // Initialize Firebase and notifications concurrently
+    await Future.wait([
+      Firebase.initializeApp(
+        name: "fastbuy",
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyBi-lX5Qe0a7dquyxqzIJcvz7vBCCNiYBs",
+          appId: "1:868906482031:android:a5fc441b5ecc8a3d46509a",
+          messagingSenderId: "868906482031",
+          projectId: "fastbuy-55678",
+          storageBucket: "com.zeocodes.fastbuy",
+        ),
+      ),
+      FirebaseApi().initNotifications(),
+    ]);
+  } catch (e) {
+    debugPrint("Firebase initialization error: $e");
+  }
+
   runApp(
-    MyApp(),
+    const MyApp(),
   );
 }
 
@@ -85,7 +93,7 @@ class MyApp extends StatelessWidget {
               return supportedLocales.first;
             },
             debugShowCheckedModeBanner: false,
-            home: SplashScreen(),
+            home: const SplashScreen(),
           );
         },
       ),

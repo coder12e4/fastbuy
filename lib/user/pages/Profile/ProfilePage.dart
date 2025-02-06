@@ -3,8 +3,10 @@ import 'package:fastbuy/user/userCubit/profile/profile_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../userCubit/loginCubit/login_user_cubit.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../userCubit/loginCubit/login_user_cubit.dart';
 
 class Profilepage extends StatefulWidget {
   final String userId;
@@ -80,12 +82,6 @@ class _ProfilepageState extends State<Profilepage> {
       appBar: AppBar(
         backgroundColor: FbColors.primaryColor,
         title: Text("Profile"),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          profileCubit.UpdateProfile(widget.userId);
-        },
-        child: Icon(Icons.edit),
       ),
       body: Container(
         child: BlocProvider<ProfileCubit>(
@@ -175,6 +171,36 @@ class _ProfilepageState extends State<Profilepage> {
                         ),
                         ProfileElements("Seller Adress",
                             state.userModel.shopmo!.shopAddress),
+                        Expanded(child: SizedBox()),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                profileCubit.editProfileInitial();
+                              },
+                              child: Container(
+                                height: 60,
+                                width: 60,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: FbColors.primaryColor,
+                                    borderRadius: BorderRadius.circular(80)),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
                       ],
                     ),
                   );
@@ -187,30 +213,7 @@ class _ProfilepageState extends State<Profilepage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(
-                            height: 18,
-                          ),
                           // Username
-                          TextFormField(
-                            enabled: false,
-                            controller: usernameTxtController,
-                            maxLines: 1,
-                            maxLength: 100,
-                            decoration: const InputDecoration(
-                              labelText: "Enter your email",
-                              prefixIcon: Icon(Icons.person),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                  .hasMatch(value)) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
                           const SizedBox(
                             height: 8,
                           ),
@@ -352,16 +355,6 @@ class _ProfilepageState extends State<Profilepage> {
                           const SizedBox(
                             width: 30,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Select your seller",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
 
                           const SizedBox(
                             height: 10,
@@ -453,7 +446,10 @@ class _ProfilepageState extends State<Profilepage> {
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  auth_cubit.getCurrentLocationDetails();
+                                  Position? position = await profileCubit
+                                      .getCurrentLocationDetails();
+                                  lat = position!.longitude.toString();
+                                  long = position.longitude.toString();
                                 },
                                 child: SizedBox(
                                   width: 100,
@@ -461,6 +457,29 @@ class _ProfilepageState extends State<Profilepage> {
                                   child: Center(child: Text("Add Location")),
                                 ),
                               ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  Position? position = await profileCubit
+                                      .getCurrentLocationDetails();
+                                  if (position != null) {
+                                    lat = position.latitude.toString();
+                                    long = position.longitude.toString();
+
+                                    String googleMapsUrl =
+                                        "https://www.google.com/maps/search/?api=1&query=$lat,$long";
+                                    if (await canLaunchUrl(
+                                        Uri.parse(googleMapsUrl))) {
+                                      await launchUrl(Uri.parse(googleMapsUrl));
+                                    } else {
+                                      throw 'Could not open the map.';
+                                    }
+                                  }
+                                },
+                                child: Text("Open Google Maps"),
+                              )
                             ],
                           ),
                           const SizedBox(
