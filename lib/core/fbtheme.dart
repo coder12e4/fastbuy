@@ -1,3 +1,4 @@
+import 'package:fastbuy/core/constants.dart';
 import 'package:flutter/material.dart';
 
 class FbTheme {
@@ -21,7 +22,7 @@ class FbTheme {
       scaffoldBackgroundColor: Colors.black,
       elevatedButtonTheme: fbelevatedbuttontheme.Darkthem,
       inputDecorationTheme: FbTxtfieldTheme.darkinputDecorationTheme,
-      cardTheme: const CardTheme(color: Colors.white));
+      cardTheme: const CardTheme(color: Colors.black));
 }
 
 class fbTextTheme {
@@ -31,7 +32,7 @@ class fbTextTheme {
     headlineLarge: const TextStyle().copyWith(
         fontSize: 32,
         fontWeight: FontWeight.bold,
-        color: Colors.black,
+        color: FbColors.primaryColor,
         fontFamily: "bold"),
     headlineMedium: const TextStyle().copyWith(
         fontSize: 24,
@@ -85,22 +86,22 @@ class fbTextTheme {
     headlineLarge: const TextStyle().copyWith(
         fontSize: 32,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     headlineMedium: const TextStyle().copyWith(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     headlineSmall: const TextStyle().copyWith(
         fontSize: 12,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     titleLarge: const TextStyle().copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     titleMedium: const TextStyle().copyWith(
         fontSize: 14,
@@ -110,12 +111,12 @@ class fbTextTheme {
     titleSmall: const TextStyle().copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bold"),
     bodyLarge: const TextStyle().copyWith(
         fontSize: 12,
         fontWeight: FontWeight.normal,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "bord"),
     bodySmall: const TextStyle().copyWith(
         fontSize: 8,
@@ -124,11 +125,11 @@ class fbTextTheme {
         color: Colors.red.withOpacity(0.3),
         fontFamily: "regular"),
     bodyMedium: const TextStyle().copyWith(
-        fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
+        fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
     labelMedium: const TextStyle().copyWith(
         fontSize: 8,
         fontWeight: FontWeight.normal,
-        color: Colors.white,
+        color: Colors.black,
         fontFamily: "regular"),
   );
 }
@@ -138,28 +139,28 @@ class fbelevatedbuttontheme {
   static final lightthem = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
           elevation: 0,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           backgroundColor: Colors.green,
           disabledBackgroundColor: Colors.grey,
           disabledForegroundColor: Colors.grey,
           side: const BorderSide(color: Colors.green),
           padding: const EdgeInsets.symmetric(vertical: 10),
           textStyle: const TextStyle().copyWith(
-              fontSize: 8, fontWeight: FontWeight.normal, color: Colors.white),
+              fontSize: 8, fontWeight: FontWeight.normal, color: Colors.black),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))));
 
   static final Darkthem = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
           elevation: 0,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           backgroundColor: Colors.green,
           disabledBackgroundColor: Colors.grey,
           disabledForegroundColor: Colors.grey,
           side: const BorderSide(color: Colors.green),
           padding: const EdgeInsets.all(4),
           textStyle: const TextStyle().copyWith(
-              fontSize: 8, fontWeight: FontWeight.normal, color: Colors.white),
+              fontSize: 8, fontWeight: FontWeight.normal, color: Colors.black),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))));
 }
@@ -185,18 +186,18 @@ class fbAppBartheme {
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
       iconTheme: const IconThemeData(color: Colors.black, size: 24),
-      actionsIconTheme: const IconThemeData(color: Colors.white, size: 24),
+      actionsIconTheme: const IconThemeData(color: Colors.black, size: 24),
       titleTextStyle: const TextStyle().copyWith(
-          fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white));
+          fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black));
 }
 
 class FbTxtfieldTheme {
   FbTxtfieldTheme._();
   static InputDecorationTheme lightinputDecorationTheme = InputDecorationTheme(
       errorMaxLines: 3,
-      fillColor: Colors.white,
+      fillColor: Colors.black,
       prefixIconColor: Colors.black,
-      suffixIconColor: Colors.white,
+      suffixIconColor: Colors.black,
       labelStyle: const TextStyle().copyWith(
           fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
       hintStyle: const TextStyle().copyWith(
@@ -221,7 +222,7 @@ class FbTxtfieldTheme {
 
   static InputDecorationTheme darkinputDecorationTheme = InputDecorationTheme(
       errorMaxLines: 3,
-      fillColor: Colors.white,
+      fillColor: Colors.black,
       prefixIconColor: Colors.white,
       suffixIconColor: Colors.grey,
       labelStyle: const TextStyle().copyWith(

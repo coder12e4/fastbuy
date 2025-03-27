@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,12 +48,17 @@ class HomeUserCubit extends Cubit<HomeUserState> {
           .where('userId', isEqualTo: userId)
           .get();
 
+      print(querySnapshot.docs.asMap());
+
       final orders = querySnapshot.docs
           .map((doc) =>
               OrderModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
+      print(orders.asMap());
       emit(UserOrderSuccess(orders));
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   void fetchCategories(String sellerId, String userId) async {

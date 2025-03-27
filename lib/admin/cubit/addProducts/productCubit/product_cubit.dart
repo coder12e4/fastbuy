@@ -92,7 +92,8 @@ class ProductCubit extends Cubit<ProductState> {
           image: product.image,
           Discount: product.Discount,
           PriceAfterDiscount: product.PriceAfterDiscount,
-          stock: product.stock);
+          stock: product.stock,
+          QuantityType: product.QuantityType);
 
       emit(ProductCreationSuccess());
     } catch (e) {

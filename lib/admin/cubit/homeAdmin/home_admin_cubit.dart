@@ -1,12 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastbuy/admin/cubit/addProducts/productCubit/product_cubit.dart';
-import 'package:fastbuy/admin/cubit/addProducts/subCategoryCubit/subcategory_cubit.dart';
-import 'package:fastbuy/admin/cubit/auth_cubit.dart';
-import 'package:fastbuy/user/userCubit/homeUserCubit/home_user_cubit.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
@@ -146,30 +142,27 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
       String? imageUrl = await uploadImageToStorage(imageFile);
       if (imageUrl != null) {
         await saveImageUrlToFirestore(imageUrl);
-        print('Image uploaded and URL saved to Firestore.');
-      } else {
-        print('Failed to upload image.');
-      }
+      } else {}
     }
   }
 
   Future<void> fetchOrdersByUserId(String userId) async {
-    // emit(UserOrderLoading());
+    emit(OrderListLoading());
     try {
-      FirebaseFirestore _firestore = FirebaseFirestore.instance;
-      _getOrders = await _firestore
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      _getOrders = firestore
           .collection('orders')
           .where('marchantId', isEqualTo: userId)
-          .snapshots().listen((snapShots){
+          .snapshots()
+          .listen((snapShots) {
         final orders = snapShots.docs
-            .map((doc) =>
-            OrderModel.fromMap(doc.data(), doc.id))
+            .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
             .toList();
-        // emit(UserOrderSuccess(orders));
-
+        emit(OrderListSuccess(orders));
       });
-
-    } catch (e) {}
+    } catch (e) {
+      emit(OrderListFail());
+    }
   }
 
   void loadProductsformSearch(String searchQuery, String? sellerId) async {
@@ -201,13 +194,12 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
         final errorMessage = e.message!;
         if (errorMessage.contains('FAILED_PRECONDITION') &&
             errorMessage.contains('index')) {
-          print('Firestore indexing error: $errorMessage');
-          emit(LoadProductsFailed('Firestore indexing error: $errorMessage'));
+          emit(LoadProductsFailed(' indexing error: $errorMessage'));
         } else {
-          emit(LoadProductsFailed('Firestore indexing error: $errorMessage'));
+          emit(LoadProductsFailed(' indexing error: $errorMessage'));
         }
       } else {
-        emit(LoadProductsFailed('Firestore indexing error:'));
+        emit(LoadProductsFailed(' indexing error:'));
       }
     }
   }
@@ -217,6 +209,7 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
     _CategorisStreams.cancel();
     _SubcategoryStreams.cancel();
     _ProductStreams.cancel();
+    _getOrders.cancel();
     return super.close();
   }
 }

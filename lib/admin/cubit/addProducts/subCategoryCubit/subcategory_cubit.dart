@@ -50,4 +50,31 @@ class SubcategoryCubit extends Cubit<SubcategoryState> {
   void addSubcategories() {
     emit(SubcategoryAddNewSubcategoryInitial());
   }
+
+  void loadCategoriesformSearch(String searchQuery, String? sellerId) async {
+    try {
+      FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      List<Subcategory> list = [];
+      emit(SubcategoryListLoading());
+      list.clear();
+      if (searchQuery.isEmpty) {
+        list = [];
+      } else {
+        QuerySnapshot querySnapshot = await _firestore
+            .collection('subcategories')
+            .where('userId', isEqualTo: sellerId)
+            .where('name', isGreaterThanOrEqualTo: searchQuery)
+            .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+            .get();
+        list = querySnapshot.docs.map((doc) {
+          return Subcategory.fromMap(
+              doc.data() as Map<String, dynamic>, doc.id);
+        }).toList();
+      }
+      emit(SubcategoryListSuccess(list));
+    } catch (e) {
+      emit(SubcategoryFail(e.toString()));
+      print('Error occurred: $e');
+    }
+  }
 }

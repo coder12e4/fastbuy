@@ -19,7 +19,7 @@ class CartModel extends Equatable {
     return CartModel(
         product:
             Product.fromMap(map['product'], map['product']['subcategoryId']),
-        quantity: map['count'],
+        quantity: map['quantity'],
         price: map['price'],
         id: map["userId"],
         productId: map['productId']);
@@ -28,9 +28,9 @@ class CartModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'product': product.toMap(),
-      'count': quantity,
+      'quantity': quantity,
       'price': price,
-      "categoryId": id,
+      "userId": id,
       "productId": productId
     };
   }

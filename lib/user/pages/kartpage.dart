@@ -1,8 +1,9 @@
 import 'package:fastbuy/admin/adminModels/addProductModel/addproduct.dart';
-import 'package:fastbuy/user/Models/Cartmodel.dart';
 import 'package:fastbuy/user/userCubit/Kart_cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../Models/Cartmodel.dart';
 
 class CartPage extends StatefulWidget {
   final String userId;
@@ -14,7 +15,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late CartCubit cartCubit;
-  List<Product> products = [];
+  List<CartModel> products = [];
   double price = 0.0;
   @override
   void initState() {
@@ -39,7 +40,7 @@ class _CartPageState extends State<CartPage> {
             } else if (state is CartLoading) {
             } else if (state is CartSuccess) {
               for (int i = 0; i < state.listCartUser.length; i++) {
-                products.add(state.listCartUser[i].product);
+                products = state.listCartUser;
                 price += price + double.parse(state.listCartUser[i].price);
               }
             } else if (state is CartFail) {
@@ -88,14 +89,14 @@ class _CartPageState extends State<CartPage> {
                                 OrderModel ordermodel = OrderModel(
                                     id: "",
                                     userId: widget.userId,
-                                    marchantId: products[0].userId,
-                                    products: products,
+                                    marchantId: products[0].product.userId,
+                                    kartModel: products,
                                     totalPrice: price,
                                     discount: 00,
                                     finalPrice: 00,
-                                    status: "oredred",
-                                    createdAt: DateTime.timestamp(),
-                                    updatedAt: DateTime.timestamp());
+                                    status: "Pending",
+                                    createdAt: DateTime.timestamp().toString(),
+                                    updatedAt: DateTime.timestamp().toString());
 
                                 cartCubit
                                     .addOrderAndSendNotification(ordermodel);
@@ -143,14 +144,14 @@ class _CartPageState extends State<CartPage> {
                                 OrderModel ordermodel = OrderModel(
                                     id: "",
                                     userId: widget.userId,
-                                    marchantId: products[0].userId,
-                                    products: products,
+                                    marchantId: products[0].product.userId,
+                                    kartModel: products,
                                     totalPrice: price,
                                     discount: 00,
                                     finalPrice: 00,
-                                    status: "oredred",
-                                    createdAt: DateTime.timestamp(),
-                                    updatedAt: DateTime.timestamp());
+                                    status: "Pending",
+                                    createdAt: DateTime.timestamp().toString(),
+                                    updatedAt: DateTime.timestamp().toString());
 
                                 cartCubit
                                     .addOrderAndSendNotification(ordermodel);
@@ -184,14 +185,14 @@ class _CartPageState extends State<CartPage> {
                                 OrderModel ordermodel = OrderModel(
                                     id: "",
                                     userId: widget.userId,
-                                    marchantId: products[0].userId,
-                                    products: products,
+                                    marchantId: products[0].product.userId,
+                                    kartModel: products,
                                     totalPrice: price,
                                     discount: 00,
                                     finalPrice: 00,
-                                    status: "oredred",
-                                    createdAt: DateTime.timestamp(),
-                                    updatedAt: DateTime.timestamp());
+                                    status: "Pending",
+                                    createdAt: DateTime.timestamp().toString(),
+                                    updatedAt: DateTime.timestamp().toString());
 
                                 cartCubit
                                     .addOrderAndSendNotification(ordermodel);

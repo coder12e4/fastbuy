@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../admin/pages/loginAdmin.dart';
 import '../admin/repository/adminAuthRepository.dart';
-import '../core/fbtheme.dart';
-import '../service/get_serverkey.dart';
+
 import '../user/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
@@ -82,21 +81,25 @@ class SplashScreenState extends State with SingleTickerProviderStateMixin {
           child: BlocBuilder<SpashCubit, SpashState>(
             bloc: _spashCubit,
             builder: (context, state) {
-              return Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.add_shopping_cart_sharp,
-                      size: 28,
-                      color: Colors.blue,
-                    ),
-                    Text(
-                      "fastbuy",
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ],
+              return const Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_shopping_cart_sharp,
+                        size: 28,
+                        color: Colors.green,
+                      ),
+                      Text(
+                        "Fastbuy",
+                        style: TextStyle(color: Colors.green, fontSize: 28),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

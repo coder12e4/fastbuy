@@ -1,5 +1,6 @@
 import 'package:fastbuy/user/Models/UserModel.dart';
 import 'package:fastbuy/user/userCubit/loginCubit/login_user_cubit.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../admin/adminModels/regmodel.dart';
@@ -467,24 +468,28 @@ class RegistrationState extends State {
                                   } else {
                                     if (_formKey.currentState?.validate() ??
                                         false) {
-                                      auth_cubit.RegisterUser(UserModel(
-                                        usernameTxtController.text,
-                                        passwordTxtController.text,
-                                        homeNameTxtController.text,
-                                        homeNoTxtController.text,
-                                        locationTxtController.text,
-                                        "malappuram",
-                                        objshopModel,
-                                        pinTxtController.text,
-                                        whatsApp1.text,
-                                        whatsApp2.text,
-                                        street!,
-                                        subLocality!,
-                                        locality!,
-                                        country!,
-                                        lat!,
-                                        long!,
-                                      ));
+                                      FirebaseMessaging.instance
+                                          .getToken()
+                                          .then((fcm) {
+                                        auth_cubit.RegisterUser(UserModel(
+                                            usernameTxtController.text,
+                                            passwordTxtController.text,
+                                            homeNameTxtController.text,
+                                            homeNoTxtController.text,
+                                            locationTxtController.text,
+                                            "malappuram",
+                                            objshopModel,
+                                            pinTxtController.text,
+                                            whatsApp1.text,
+                                            whatsApp2.text,
+                                            street!,
+                                            subLocality!,
+                                            locality!,
+                                            country!,
+                                            lat!,
+                                            long!,
+                                            fcm));
+                                      });
                                     }
                                   }
                                 },
@@ -872,24 +877,28 @@ class RegistrationState extends State {
                                   } else {
                                     if (_formKey.currentState?.validate() ??
                                         false) {
-                                      auth_cubit.RegisterUser(UserModel(
-                                        usernameTxtController.text,
-                                        passwordTxtController.text,
-                                        homeNameTxtController.text,
-                                        homeNoTxtController.text,
-                                        locationTxtController.text,
-                                        "malappuram",
-                                        objshopModel,
-                                        pinTxtController.text,
-                                        whatsApp1.text,
-                                        whatsApp2.text,
-                                        street!,
-                                        subLocality!,
-                                        locality!,
-                                        country!,
-                                        lat!,
-                                        long!,
-                                      ));
+                                      FirebaseMessaging.instance
+                                          .getToken()
+                                          .then((fcm) {
+                                        auth_cubit.RegisterUser(UserModel(
+                                            usernameTxtController.text,
+                                            passwordTxtController.text,
+                                            homeNameTxtController.text,
+                                            homeNoTxtController.text,
+                                            locationTxtController.text,
+                                            "malappuram",
+                                            objshopModel,
+                                            pinTxtController.text,
+                                            whatsApp1.text,
+                                            whatsApp2.text,
+                                            street!,
+                                            subLocality!,
+                                            locality!,
+                                            country!,
+                                            lat!,
+                                            long!,
+                                            fcm));
+                                      });
                                     }
                                   }
                                 },
@@ -1258,24 +1267,28 @@ class RegistrationState extends State {
                                   } else {
                                     if (_formKey.currentState?.validate() ??
                                         false) {
-                                      auth_cubit.RegisterUser(UserModel(
-                                        usernameTxtController.text,
-                                        passwordTxtController.text,
-                                        homeNameTxtController.text,
-                                        homeNoTxtController.text,
-                                        locationTxtController.text,
-                                        "malappuram",
-                                        objshopModel,
-                                        pinTxtController.text,
-                                        whatsApp1.text,
-                                        whatsApp2.text,
-                                        street!,
-                                        subLocality!,
-                                        locality!,
-                                        country!,
-                                        lat!,
-                                        long!,
-                                      ));
+                                      FirebaseMessaging.instance
+                                          .getToken()
+                                          .then((fcm) {
+                                        auth_cubit.RegisterUser(UserModel(
+                                            usernameTxtController.text,
+                                            passwordTxtController.text,
+                                            homeNameTxtController.text,
+                                            homeNoTxtController.text,
+                                            locationTxtController.text,
+                                            "malappuram",
+                                            objshopModel,
+                                            pinTxtController.text,
+                                            whatsApp1.text,
+                                            whatsApp2.text,
+                                            street!,
+                                            subLocality!,
+                                            locality!,
+                                            country!,
+                                            lat!,
+                                            long!,
+                                            fcm));
+                                      });
                                     }
                                   }
                                 },
@@ -1626,24 +1639,28 @@ class RegistrationState extends State {
                                   } else {
                                     if (_formKey.currentState?.validate() ??
                                         false) {
-                                      auth_cubit.RegisterUser(UserModel(
-                                        usernameTxtController.text,
-                                        passwordTxtController.text,
-                                        homeNameTxtController.text,
-                                        homeNoTxtController.text,
-                                        locationTxtController.text,
-                                        "malappuram",
-                                        objshopModel,
-                                        pinTxtController.text,
-                                        whatsApp1.text,
-                                        whatsApp2.text,
-                                        street!,
-                                        subLocality!,
-                                        locality!,
-                                        country!,
-                                        lat!,
-                                        long!,
-                                      ));
+                                      FirebaseMessaging.instance
+                                          .getToken()
+                                          .then((fcm) {
+                                        auth_cubit.RegisterUser(UserModel(
+                                            usernameTxtController.text,
+                                            passwordTxtController.text,
+                                            homeNameTxtController.text,
+                                            homeNoTxtController.text,
+                                            locationTxtController.text,
+                                            "malappuram",
+                                            objshopModel,
+                                            pinTxtController.text,
+                                            whatsApp1.text,
+                                            whatsApp2.text,
+                                            street!,
+                                            subLocality!,
+                                            locality!,
+                                            country!,
+                                            lat!,
+                                            long!,
+                                            fcm));
+                                      });
                                     }
                                   }
                                 },

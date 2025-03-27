@@ -83,13 +83,13 @@ class LoginState extends State<Login> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.add_shopping_cart_sharp,
                               size: 28,
-                              color: Colors.blue,
+                              color: FbColors.primaryColor,
                             ),
                             Text(
-                              "fastbuy",
+                              "Fastbuy",
                               style: fbTextTheme.lightTxttheme.headlineLarge,
                             ),
                           ],
@@ -184,14 +184,8 @@ class LoginState extends State<Login> {
                           width: double.infinity,
                           child: ElevatedButton(
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  FirebaseMessaging.instance
-                                      .getToken()
-                                      .then((fcmtoken) {
-                                    loginUserCubit.userLogin(
-                                        email.text, password.text, fcmtoken!);
-                                  });
-                                }
+                                loginUserCubit.userLogin(
+                                    email.text, password.text);
                               },
                               child: Text(
                                 "Login",
@@ -248,13 +242,13 @@ class LoginState extends State<Login> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.add_shopping_cart_sharp,
                               size: 28,
-                              color: Colors.blue,
+                              color: FbColors.primaryColor,
                             ),
                             Text(
-                              "fastbuy",
+                              "Fastbuy",
                               style: fbTextTheme.lightTxttheme.headlineLarge,
                             ),
                           ],
@@ -362,7 +356,7 @@ class LoginState extends State<Login> {
                                 height: 18,
                                 width: 18,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               )),
                         ),
@@ -519,14 +513,8 @@ class LoginState extends State<Login> {
                           width: double.infinity,
                           child: ElevatedButton(
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  FirebaseMessaging.instance
-                                      .getToken()
-                                      .then((fcmtoken) {
-                                    loginUserCubit.userLogin(
-                                        email.text, password.text, fcmtoken!);
-                                  });
-                                }
+                                loginUserCubit.userLogin(
+                                    email.text, password.text);
                               },
                               child: Text(
                                 "Login",

@@ -6,6 +6,7 @@ import 'package:fastbuy/admin/adminModels/regmodel.dart';
 import 'package:fastbuy/admin/cubit/auth_cubit.dart';
 import 'package:fastbuy/service/get_serverkey.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -19,10 +20,10 @@ part 'login_user_state.dart';
 class LoginUserCubit extends Cubit<LoginUserState> {
   LoginUserCubit() : super(LoginUserInitial());
 
-  Future<void> userLogin(
-      String userName, String password, String fcmtoken) async {
+  Future<void> userLogin(String userName, String password) async {
     try {
       emit(LoginUserLoading());
+
       FirebaseAuth firebaseAuth = FirebaseAuth.instance;
       //getServerkey
       Serverkey serverkey = Serverkey();
@@ -32,18 +33,24 @@ class LoginUserCubit extends Cubit<LoginUserState> {
       if (userCredential.user != null) {
         if (userCredential.user!.emailVerified) {
           // Save user data to SharedPreferences
+          String? fcm = await FirebaseMessaging.instance.getToken();
+
           var userDataSnapshot = await FirebaseFirestore.instance
               .collection("users")
               .where("userId", isEqualTo: userCredential.user!.uid)
               .limit(1)
               .get();
           //  var userData = userDataSnapshot.docs.first.data()['selectedSeller']['userId'];
-          final documentSnapshot = await FirebaseFirestore.instance
-              .collection('sellers') // Replace with your collection name
-              .where("userId",
-                  isEqualTo: userDataSnapshot.docs.first
-                      .data()['selectedSeller']['userId'])
-              .get();
+
+          DocumentReference docRef = userDataSnapshot.docs.first.reference;
+
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            DocumentSnapshot snapshot = await transaction.get(docRef);
+            if (!snapshot.exists) {
+              throw Exception("Document does not exist!");
+            }
+            transaction.update(docRef, {'userFcm': fcm});
+          });
 
           AuthCubit authCubit = AuthCubit(adminAuthRepo(), AuthInitial());
 
@@ -51,10 +58,10 @@ class LoginUserCubit extends Cubit<LoginUserState> {
               userCredential.user!.uid,
               true,
               true,
-              fcmtoken,
+              fcm,
               servertoken,
               userDataSnapshot.docs.first.data()['selectedSeller']['userId'],
-              documentSnapshot.docs.first['sellerfcm'],
+              userDataSnapshot.docs.first['selectedSeller']['sellerfcm'],
               password,
               userName);
           emit(LoginUserSuccess(userCredential.user!.uid,
@@ -89,6 +96,7 @@ class LoginUserCubit extends Cubit<LoginUserState> {
       UserCredential? userCredential =
           await auth.createUserWithEmailAndPassword(
               email: userModel.userName!, password: userModel.password!);
+
       user = userCredential.user!;
 
       user.sendEmailVerification();
@@ -114,7 +122,8 @@ class LoginUserCubit extends Cubit<LoginUserState> {
       'place': userModel.place,
       'locality': userModel.locality,
       'lat': userModel.latitude,
-      'long': userModel.longitude
+      'long': userModel.longitude,
+      'userFcm': userModel.userFcm
     }).then((value) {
       emit(LoginUserSuccess(user!.uid, userModel.shopmo!.userId!));
     }).catchError((error) {

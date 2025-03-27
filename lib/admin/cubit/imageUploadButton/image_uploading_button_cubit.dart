@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as img;
 part 'image_uploading_button_state.dart';
 
 class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
@@ -14,9 +16,6 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
 
   final storage =
       FirebaseStorage.instanceFor(bucket: "gs://fastbuy-55678.appspot.com");
-  UploadTask? uploadTask;
-  final progress = 0.0;
-  String? UploadUrl;
 
   /* Future uploadfile() async {
     final path = "images/'${platformFile!.name}'";
@@ -30,6 +29,7 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
     uploadTask = null;
   }
 */
+
   Future<File?> pickImage(bool b) async {
     final pickedFile;
     if (b) {
@@ -45,6 +45,43 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
     }
   }
 
+  Future<File?> compressImage(File imageFile) async {
+    try {
+      // Read image bytes
+      Uint8List imageBytes = await imageFile.readAsBytes();
+
+      // Decode image
+      img.Image? image = img.decodeImage(imageBytes);
+      if (image == null) return null;
+
+      // Resize image (reduce size while maintaining aspect ratio)
+      img.Image resizedImage = img.copyResize(
+        image,
+        width: 300, // Adjust width as needed
+      );
+
+      // Encode to JPG with lower quality (reduce file size)
+      List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 75);
+
+      // Save compressed image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      File compressedFile = File('${tempDir.path}/compressed_image.jpg');
+      await compressedFile.writeAsBytes(compressedBytes);
+
+      print("Original Size: ${imageFile.lengthSync()} bytes");
+      print("Compressed Size: ${compressedFile.lengthSync()} bytes");
+
+      return compressedFile;
+    } catch (e) {
+      print("Error compressing image: $e");
+      return null;
+    }
+  }
+
+  UploadTask? uploadTask;
+  late double progress = 0.0;
+  String? UploadUrl;
+
   Future<String?> uploadImageToStorage(File imageFile) async {
     try {
       String fileName =
@@ -53,15 +90,16 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
 
       final storageRef = storage.ref().child(fileName);
       final metadata = SettableMetadata(contentType: "image/jpeg");
-
-      uploadTask = storageRef.putFile(imageFile, metadata);
+      File? imageFile1 = await compressImage(imageFile);
+      uploadTask = storageRef.putFile(imageFile1!, metadata);
 
       uploadTask!.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
         switch (taskSnapshot.state) {
           case TaskState.running:
-            final progress = 100.0 *
+            print("Uploading");
+            progress = 100.0 *
                 (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-            print("Upload is $progress% complete.");
+            emit(ImageUploadingButtonLoading(progress));
             break;
           case TaskState.paused:
             print("Upload is paused.");
@@ -109,26 +147,24 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Gallery'),
-                      onTap: () {
-                        uploadAndSaveImage("category", name, true);
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Gallery'),
                     onTap: () {
-                      uploadAndSaveImage("category", name, false);
+                      uploadAndSaveImage("category", name, true);
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                    }),
+                new ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    uploadAndSaveImage("category", name, false);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });
@@ -137,14 +173,14 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
   Future<void> uploadAndSaveImage(
       String? subjectTypeId, String subject, bool b) async {
     File? imageFile = await pickImage(b);
+
     if (imageFile != null) {
       try {
-        emit(ImageUploadingButtonLoading(progress));
-        print(imageFile);
         final imageUrl = await uploadImageToStorage(imageFile);
         UploadUrl = imageUrl;
         if (imageUrl != null) {
           await saveImageUrlToFirestore(imageUrl, subjectTypeId, subject);
+          emit(ImageUploadingButtonSuccess(imageUrl));
         } else {
           emit(ImageUploadingButtonFailed("Failed to upload image"));
         }

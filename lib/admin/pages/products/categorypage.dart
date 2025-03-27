@@ -10,6 +10,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants.dart';
+
 class CategoryPage extends StatefulWidget {
   final String UserId;
   CategoryPage(this.UserId);
@@ -46,15 +48,70 @@ class _CategoryPageState extends State<CategoryPage> {
       String? userid = await context.read<AuthCubit>().getUserId();
       final category = Category(
           id: '', name: _nameController.text, userId: userId!, image: image);
-      context.read<CategoryCubit>().addCategory(category, userId, image);
+      categoryCubit.addCategory(category, userId, image);
       _nameController.clear();
     }
+  }
+
+  final TextEditingController _searchController = TextEditingController();
+  Widget Search() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: TextField(
+            style: TextStyle(fontSize: 14, color: Colors.black),
+            controller: _searchController,
+            onChanged: (value) {
+              setState(() {
+                //  adminCubit.loadProductsformSearch(value, userId);
+                categoryCubit.loadCategoriesformSearch(value, widget.UserId);
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              hintText: 'Search',
+              hintStyle: const TextStyle(fontSize: 14),
+              prefixIcon: const Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Categories')),
+      appBar: AppBar(
+        title: Text('Categories'),
+        backgroundColor: Colors.white,
+      ),
       body: Container(
         padding: EdgeInsets.all(4),
         child: BlocProvider<CategoryCubit>(
@@ -66,6 +123,7 @@ class _CategoryPageState extends State<CategoryPage> {
               } else if (state is CategoryLoading) {
               } else if (state is CategorySuccess) {
                 categories = state.categories;
+              } else if (state is CategorySearchFail) {
               } else if (state is CategoryFail) {}
             },
             child: BlocBuilder<CategoryCubit, CategoryState>(
@@ -74,43 +132,68 @@ class _CategoryPageState extends State<CategoryPage> {
                 if (state is CategoryInitial) {
                   return Container();
                 } else if (state is CategoryLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
                   );
                 } else if (state is CategorySuccess) {
                   return Column(
                     children: [
+                      Search(),
                       SizedBox(
                         height: 20,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 80,
-                            height: 40,
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  categoryCubit.chageToAdd();
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.add,
-                                      size: 14,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text("Add New")
-                                  ],
-                                )),
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Total Categories: ${categories.length}",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            SizedBox(
+                              width: 80,
+                              height: 40,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    categoryCubit.chageToAdd();
+                                  },
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      Text(
+                                        "Add New",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w400),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
                       ),
                       Expanded(
                         child: ListView.builder(
@@ -119,6 +202,11 @@ class _CategoryPageState extends State<CategoryPage> {
                             final category = categories[index];
                             return ListTile(
                               title: Text(category.name),
+                              leading: SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: Image.network(category.image)),
+                              subtitle: Text(category.id),
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -134,7 +222,27 @@ class _CategoryPageState extends State<CategoryPage> {
                     ],
                   );
                 } else if (state is CategoryFail) {
-                  return const Text("Failed");
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  );
+                } else if (state is CategorySearchFail) {
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  );
                 } else if (state is CategoryAddInitial) {
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -142,6 +250,11 @@ class _CategoryPageState extends State<CategoryPage> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          Text(
+                            "Add New Category",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
                           SizedBox(
                             height: 40,
                             child: Row(
@@ -305,11 +418,38 @@ class _CategoryPageState extends State<CategoryPage> {
                     ),
                   );
                 } else if (state is CategoryAddLoading) {
-                  return const Text("Failed");
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  );
                 } else if (state is CategoryAddSuccess) {
-                  return const Text("Failed");
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  );
                 } else if (state is CategoryAddFail) {
-                  return const Text("Failed");
+                  return Column(
+                    children: [
+                      Search(),
+                      Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  );
                 } else {
                   return Container();
                 }

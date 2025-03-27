@@ -1,13 +1,12 @@
-import 'package:fastbuy/admin/cubit/auth_cubit.dart';
 import 'package:fastbuy/admin/cubit/homeAdmin/home_admin_cubit.dart';
+import 'package:fastbuy/common/OrderItems/order_item_cubit.dart';
 import 'package:fastbuy/core/constants.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fastbuy/core/widgets/emptyoralert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hexcolor/hexcolor.dart';
 import '../../../user/pages/loginpage.dart';
+import '../../../common/OrderItems/OrderItemView.dart';
 import '../../adminModels/addProductModel/addproduct.dart';
 import '../../cubit/addProducts/productCubit/product_cubit.dart';
 import '../../cubit/addProducts/subCategoryCubit/subcategory_cubit.dart';
@@ -28,17 +27,18 @@ class _HomepageadminState extends State<Homepageadmin> {
   List<Subcategory> subcategories = [];
   int _selectedIndex = 0;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<OrderModel> orderlist = [];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
     if (_selectedIndex == 1) {
-      /*  homeUserCubit.fetchOrdersByUserId(userId);*/
+      adminCubit.fetchOrdersByUserId(userId!);
     } else {
-      /*   homeUserCubit.fetchCategories(sellerId!, userId);
-      homeUserCubit1.getCartByuserId(userId);
+      getData(context);
+      /*    adminCubit.fetchCategories(sellerId!, userId);
+       adminCubit.getCartByuserId(userId);
    */
     }
   }
@@ -46,24 +46,21 @@ class _HomepageadminState extends State<Homepageadmin> {
   void getData(BuildContext context) async {
     try {
       userId = widget.userId;
-      print(userId);
+
       adminCubit.getCategories(userId!);
-    } catch (e) {
-      print("user id is null");
-      print(e);
-    }
+    } catch (e) {}
   }
 
   final TextEditingController _searchController = TextEditingController();
   Widget Search() {
     return Row(
       children: [
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Expanded(
           child: TextField(
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: const TextStyle(fontSize: 14, color: Colors.black),
             controller: _searchController,
             onChanged: (value) {
               setState(() {
@@ -74,14 +71,14 @@ class _HomepageadminState extends State<Homepageadmin> {
               filled: true,
               fillColor: Colors.white,
               hintText: 'Search',
-              hintStyle: TextStyle(fontSize: 14),
-              prefixIcon: Icon(
+              hintStyle: const TextStyle(fontSize: 14),
+              prefixIcon: const Icon(
                 Icons.search,
                 color: Colors.black,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.green),
+                borderSide: BorderSide(color: FbColors.primaryColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -89,16 +86,16 @@ class _HomepageadminState extends State<Homepageadmin> {
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.red),
+                borderSide: const BorderSide(color: Colors.red),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.green),
+                borderSide: const BorderSide(color: Colors.green),
               ),
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
       ],
@@ -109,16 +106,16 @@ class _HomepageadminState extends State<Homepageadmin> {
     bool exitApp = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Exit App'),
-        content: Text('Do you want to exit the app?'),
+        title: const Text('Exit App'),
+        content: const Text('Do you want to exit the app?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
+            child: const Text('Yes'),
           ),
         ],
       ),
@@ -144,6 +141,7 @@ class _HomepageadminState extends State<Homepageadmin> {
       providers: [
         BlocProvider(create: (context) => SubcategoryCubit()),
         BlocProvider(create: (context) => ProductCubit()),
+        BlocProvider(create: (context) => OrderItemCubit()),
       ],
       child: WillPopScope(
         onWillPop: () async {
@@ -152,7 +150,7 @@ class _HomepageadminState extends State<Homepageadmin> {
         child: Scaffold(
           key: _scaffoldKey,
           drawer: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(10),
@@ -165,15 +163,15 @@ class _HomepageadminState extends State<Homepageadmin> {
                   color: FbColors.primaryColor,
                   height: 180,
                   width: MediaQuery.of(context).size.width - 100,
+                  alignment: Alignment.center,
                   child: Text(
                     "Fast Buy",
                     style: TextTheme.of(context).titleMedium,
                   ),
-                  alignment: Alignment.center,
                 ),
                 GestureDetector(
                   onTap: () {},
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -200,7 +198,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                         context, MaterialPageRoute(builder: (c) => Login())));
                  */
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -224,9 +222,10 @@ class _HomepageadminState extends State<Homepageadmin> {
                 GestureDetector(
                   onTap: () {
                     adminCubit.logout().then((t) => Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (c) => Login())));
+                        context,
+                        MaterialPageRoute(builder: (c) => const Login())));
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -260,82 +259,80 @@ class _HomepageadminState extends State<Homepageadmin> {
                     _scaffoldKey.currentState!.openDrawer();
                   }
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.menu,
                   color: Colors.white,
                 )),
-            title: Container(
-              child: Row(
-                children: [
-                  Text(
-                    "HI Username",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+            title: Row(
+              children: [
+                const Text(
+                  "Hi",
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                  const Expanded(child: SizedBox()),
-                  Container(
-                    alignment: Alignment.center,
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.shopping_cart,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            /*  Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CartPage(
-                                  userId: userId,
-                                ),
-                              ),
-                            );
-                          */
-                          },
+                ),
+                const Expanded(child: SizedBox()),
+                Container(
+                  alignment: Alignment.center,
+                  child: Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
                         ),
-                        /*    Positioned(
-                          top: 2,
-                          right: -8,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 20),
-                            child: Container(
-                              width: 14,
-                              height: 14,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(13),
-                                  color: Colors.red),
-                              child: Center(
-                                child: BlocProvider<HomeUserCubit>(
-                                  create: (context) => homeUserCubit1,
-                                  child:
-                                  BlocBuilder<HomeUserCubit, HomeUserState>(
-                                    builder: (context, state) {
-                                      if (state is cartCountStateHome) {
-                                        return Text(
-                                          state.count,
-                                          style: TextStyle(
-                                              color: Colors.white, fontSize: 10),
-                                        );
-                                      } else {
-                                        return Container(
-                                          color: Colors.green,
-                                        );
-                                      }
-                                    },
-                                  ),
+                        onPressed: () {
+                          /*  Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CartPage(
+                                userId: userId,
+                              ),
+                            ),
+                          );
+                        */
+                        },
+                      ),
+                      /*    Positioned(
+                        top: 2,
+                        right: -8,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Container(
+                            width: 14,
+                            height: 14,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(13),
+                                color: Colors.red),
+                            child: Center(
+                              child: BlocProvider<HomeUserCubit>(
+                                create: (context) => homeUserCubit1,
+                                child:
+                                BlocBuilder<HomeUserCubit, HomeUserState>(
+                                  builder: (context, state) {
+                                    if (state is cartCountStateHome) {
+                                      return Text(
+                                        state.count,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 10),
+                                      );
+                                    } else {
+                                      return Container(
+                                        color: Colors.green,
+                                      );
+                                    }
+                                  },
                                 ),
                               ),
                             ),
                           ),
-                        )
-                    */
-                      ],
-                    ),
+                        ),
+                      )
+                  */
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
@@ -355,8 +352,8 @@ class _HomepageadminState extends State<Homepageadmin> {
             ],
             currentIndex: _selectedIndex,
             unselectedItemColor: Colors.grey,
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w700),
-            selectedLabelStyle: TextStyle(fontWeight: FontWeight.w700),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
             selectedItemColor: Colors.white,
             onTap: _onItemTapped,
             backgroundColor: FbColors.primaryColor,
@@ -379,7 +376,12 @@ class _HomepageadminState extends State<Homepageadmin> {
                 } else if (state is LoadProductsSuccess) {
                   products.clear();
                   products = state.productList;
-                } else if (state is LoadProductsFailed) {}
+                } else if (state is LoadProductsFailed) {
+                } else if (state is OrderListLoading) {
+                } else if (state is OrderListSuccess) {
+                  orderlist.clear();
+                  orderlist = state.orderlist;
+                } else if (state is OrderListFail) {}
               },
               child: BlocBuilder<HomeAdminCubit, HomeAdminState>(
                 bloc: adminCubit,
@@ -415,7 +417,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                           ],
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 8, left: 10, right: 10),
+                          margin: const EdgeInsets.only(
+                              top: 8, left: 10, right: 10),
                           height: 80,
                           child: Row(
                             children: [
@@ -432,8 +435,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                     child: Container(
                                       height: 60,
                                       width: 60,
-                                      margin:
-                                          EdgeInsets.only(bottom: 4, right: 10),
+                                      margin: const EdgeInsets.only(
+                                          bottom: 4, right: 10),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(60),
@@ -441,13 +444,13 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         border: Border.all(
                                             color: Colors.green, width: 1),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.add,
                                         size: 24,
                                       ),
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     "Add new",
                                     style: TextStyle(color: Colors.black),
                                   )
@@ -468,8 +471,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
-                                            margin: EdgeInsets.only(
+                                            padding: const EdgeInsets.all(4),
+                                            margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
@@ -481,16 +484,17 @@ class _HomepageadminState extends State<Homepageadmin> {
                                                   width: 1),
                                             ),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(60)),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(60)),
                                               child: Image.network(
                                                   categories[intex].image),
                                             ),
                                           ),
                                           Text(
                                             categories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -501,7 +505,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         const Row(
@@ -529,7 +533,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: subcategories.length,
                                   itemBuilder: (context, intex) {
-                                    print(subcategories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(userId!,
@@ -553,16 +556,17 @@ class _HomepageadminState extends State<Homepageadmin> {
                                                   width: 1),
                                             ),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(60)),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(60)),
                                               child: Image.network(
                                                   subcategories[intex].image),
                                             ),
                                           ),
                                           Text(
                                             subcategories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -597,7 +601,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                           ],
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+                          margin: const EdgeInsets.only(
+                              top: 10, left: 10, right: 10),
                           height: 80,
                           child: Row(
                             children: [
@@ -614,8 +619,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                     child: Container(
                                       height: 60,
                                       width: 60,
-                                      margin:
-                                          EdgeInsets.only(bottom: 4, right: 10),
+                                      margin: const EdgeInsets.only(
+                                          bottom: 4, right: 10),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(60),
@@ -623,7 +628,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         border: Border.all(
                                             color: Colors.green, width: 1),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.add,
                                         size: 24,
                                       ),
@@ -640,7 +645,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: categories.length,
                                   itemBuilder: (context, intex) {
-                                    print(categories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(
@@ -757,8 +761,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                     child: Container(
                                       height: 60,
                                       width: 60,
-                                      margin:
-                                          EdgeInsets.only(bottom: 4, right: 10),
+                                      margin: const EdgeInsets.only(
+                                          bottom: 4, right: 10),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(60),
@@ -766,7 +770,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         border: Border.all(
                                             color: Colors.green, width: 1),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.add,
                                         size: 24,
                                       ),
@@ -783,7 +787,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: categories.length,
                                   itemBuilder: (context, intex) {
-                                    print(categories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(
@@ -794,8 +797,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
-                                            margin: EdgeInsets.only(
+                                            padding: const EdgeInsets.all(4),
+                                            margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
@@ -816,8 +819,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             categories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -853,7 +856,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: subcategories.length,
                                   itemBuilder: (context, intex) {
-                                    print(subcategories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getProducts(
@@ -865,7 +867,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
+                                            padding: const EdgeInsets.all(4),
                                             margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
@@ -887,8 +889,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             subcategories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -962,8 +964,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                     child: Container(
                                       height: 60,
                                       width: 60,
-                                      margin:
-                                          EdgeInsets.only(bottom: 4, right: 10),
+                                      margin: const EdgeInsets.only(
+                                          bottom: 4, right: 10),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(60),
@@ -971,7 +973,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         border: Border.all(
                                             color: Colors.green, width: 1),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.add,
                                         size: 24,
                                       ),
@@ -988,7 +990,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: categories.length,
                                   itemBuilder: (context, intex) {
-                                    print(categories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(
@@ -999,8 +1000,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
-                                            margin: EdgeInsets.only(
+                                            padding: const EdgeInsets.all(4),
+                                            margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
@@ -1021,8 +1022,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             categories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -1058,7 +1059,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: subcategories.length,
                                   itemBuilder: (context, intex) {
-                                    print(subcategories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(userId!,
@@ -1069,7 +1069,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
+                                            padding: const EdgeInsets.all(4),
                                             margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
@@ -1091,8 +1091,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             subcategories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -1166,8 +1166,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                     child: Container(
                                       height: 60,
                                       width: 60,
-                                      margin:
-                                          EdgeInsets.only(bottom: 4, right: 10),
+                                      margin: const EdgeInsets.only(
+                                          bottom: 4, right: 10),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(60),
@@ -1175,13 +1175,13 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         border: Border.all(
                                             color: Colors.green, width: 1),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.add,
                                         size: 24,
                                       ),
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     "Add new",
                                     style: TextStyle(color: Colors.black),
                                   )
@@ -1192,7 +1192,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: categories.length,
                                   itemBuilder: (context, intex) {
-                                    print(categories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(
@@ -1225,8 +1224,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             categories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -1262,7 +1261,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: subcategories.length,
                                   itemBuilder: (context, intex) {
-                                    print(subcategories.length);
                                     return GestureDetector(
                                       onTap: () {
                                         adminCubit.getSubcategoris(userId!,
@@ -1273,7 +1271,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           Container(
                                             height: 60,
                                             width: 60,
-                                            padding: EdgeInsets.all(4),
+                                            padding: const EdgeInsets.all(4),
                                             margin: const EdgeInsets.only(
                                                 bottom: 4, right: 10),
                                             alignment: Alignment.center,
@@ -1295,8 +1293,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           ),
                                           Text(
                                             subcategories[intex].name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           )
                                         ],
                                       ),
@@ -1336,7 +1334,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                           ),
                           itemCount: products.length,
                           itemBuilder: (context, index) {
-                            print(products.length);
                             return SizedBox(
                               width: 100,
                               height:
@@ -1368,13 +1365,13 @@ class _HomepageadminState extends State<Homepageadmin> {
                                           const SizedBox(height: 4),
                                           Text(
                                             products[index]!.name,
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           ),
                                           Text(
                                             products[index]!.price.toString(),
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                            style: const TextStyle(
+                                                color: Colors.black),
                                           ),
                                         ],
                                       ),
@@ -1383,9 +1380,9 @@ class _HomepageadminState extends State<Homepageadmin> {
                                       top: 0,
                                       right: 0,
                                       child: Container(
-                                        padding: EdgeInsets.symmetric(
+                                        padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: Colors.green,
                                           borderRadius: BorderRadius.only(
                                             bottomLeft: Radius.circular(10),
@@ -1394,7 +1391,7 @@ class _HomepageadminState extends State<Homepageadmin> {
                                         ),
                                         child: Text(
                                           products[index]!.price.toString(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 12,
                                           ),
@@ -1405,7 +1402,6 @@ class _HomepageadminState extends State<Homepageadmin> {
                                 ),
                               ),
                             );
-                            ;
                           },
                         ))
                       ],
@@ -1413,6 +1409,25 @@ class _HomepageadminState extends State<Homepageadmin> {
                   } else if (state is LoadProductsFailed) {
                     return const Center(
                       child: Text('something went wrong while product loading'),
+                    );
+                  } else if (state is OrderListLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is OrderListSuccess) {
+                    return Expanded(
+                        child: ListView.builder(
+                            itemCount: orderlist.length,
+                            itemBuilder: (context, intex) {
+                              if (orderlist.isEmpty) {
+                                return const EmptyOrAlert(empty: true);
+                              } else {
+                                return OrderItemWidget(orderlist[intex], false);
+                              }
+                            }));
+                  } else if (state is OrderListFail) {
+                    return const Center(
+                      child: Text("Error"),
                     );
                   } else {
                     return const Center(

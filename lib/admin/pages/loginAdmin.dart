@@ -1,5 +1,6 @@
 import 'package:fastbuy/admin/pages/shopRegistrationPage.dart';
 import 'package:fastbuy/admin/repository/adminAuthRepository.dart';
+import 'package:fastbuy/core/constants.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,10 +77,10 @@ class _AdminLoginState extends State<AdminLogin> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.add_shopping_cart_sharp,
                             size: 28,
-                            color: Colors.blue,
+                            color: FbColors.primaryColor,
                           ),
                           Text(
                             "fastbuy",
@@ -90,13 +91,16 @@ class _AdminLoginState extends State<AdminLogin> {
                       const SizedBox(
                         height: 12,
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             "Seller",
-                            style: fbTextTheme.lightTxttheme.bodyLarge,
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800),
                           ),
                         ],
                       ),

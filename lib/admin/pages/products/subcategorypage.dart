@@ -3,6 +3,7 @@ import 'package:fastbuy/admin/cubit/imageUploadButton/image_uploading_button_cub
 import 'package:fastbuy/admin/pages/products/productPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/constants.dart';
 import '../../../core/widgets/emptyoralert.dart';
 import '../../adminModels/addProductModel/addproduct.dart';
 import '../../cubit/auth_cubit.dart';
@@ -29,16 +30,68 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   List<Subcategory> subcategories = [];
   void _addSubcategory(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String? userid = await context.read<AuthCubit>().getUserId();
+      String? userid = widget.userId;
       final subcategory = Subcategory(
-          id: userid!,
+          id: userid,
           name: _nameController.text,
           categoryId: widget.categoryId,
           userId: userid,
           image: subCategoryImage);
-      context.read<SubcategoryCubit>().addSubcategory(subcategory);
+      subcategoryCubit.addSubcategory(subcategory);
       _nameController.clear();
     }
+  }
+
+  final TextEditingController _searchController = TextEditingController();
+  Widget Search() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: TextField(
+            style: TextStyle(fontSize: 14, color: Colors.black),
+            controller: _searchController,
+            onChanged: (value) {
+              setState(() {
+                //  adminCubit.loadProductsformSearch(value, userId);
+                subcategoryCubit.loadCategoriesformSearch(value, widget.userId);
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              hintText: 'Search',
+              hintStyle: const TextStyle(fontSize: 14),
+              prefixIcon: const Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: FbColors.primaryColor),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+      ],
+    );
   }
 
   @override
@@ -51,8 +104,6 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SubcategoryCubit>().fetchSubcategories(widget.categoryId);
-
     return Scaffold(
       appBar: AppBar(title: Text('Subcategories')),
       body: BlocProvider<SubcategoryCubit>(
@@ -80,37 +131,52 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
               } else if (state is SubcategoryListSuccess) {
                 return Column(
                   children: [
+                    Search(),
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          width: 80,
-                          height: 40,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                subcategoryCubit.addSubcategories();
-                              },
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(
-                                    width: 4,
-                                  ),
-                                  Text("Add New")
-                                ],
-                              )),
-                        )
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Total Categories: ${subcategories.length}",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          SizedBox(
+                            width: 80,
+                            height: 40,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  subcategoryCubit.addSubcategories();
+                                },
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text(
+                                      "Add New",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    )
+                                  ],
+                                )),
+                          )
+                        ],
+                      ),
                     ),
                     Expanded(
                         child: ListView.builder(
@@ -124,6 +190,10 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                           );
                         } else {
                           return ListTile(
+                            leading: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Image.network(subcategory.image)),
                             title: Text(subcategory.name),
                             onTap: () => Navigator.push(
                               context,
@@ -191,9 +261,15 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                                   ),
                                 );
                               } else if (state is ImageUploadingButtonLoading) {
-                                return Center(
-                                  child: LinearProgressIndicator(
-                                    value: state.prograss,
+                                return const Center(
+                                  child: Row(
+                                    children: [
+                                      CircularProgressIndicator(),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text("Uploading")
+                                    ],
                                   ),
                                 );
                               } else if (state is ImageUploadingButtonSuccess) {

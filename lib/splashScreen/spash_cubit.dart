@@ -100,6 +100,16 @@ class SpashCubit extends Cubit<SpashState> {
               .where("userId", isEqualTo: userCredential.user!.uid)
               .limit(1)
               .get();
+
+          DocumentReference docRef = userDataSnapshot.docs.first.reference;
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            DocumentSnapshot snapshot = await transaction.get(docRef);
+            if (!snapshot.exists) {
+              throw Exception("Document does not exist!");
+            }
+            transaction.update(docRef, {'userFcm': fcmtoken});
+          });
+
           //var userData = userDataSnapshot.docs.first.data();
           final String sellerId =
               userDataSnapshot.docs.first.data()['selectedSeller']['userId'];

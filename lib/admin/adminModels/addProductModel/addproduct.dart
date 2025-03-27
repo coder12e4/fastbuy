@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../../user/Models/Cartmodel.dart';
 
 class Category extends Equatable {
   final String id;
@@ -83,17 +86,20 @@ class Product extends Equatable {
   final String Discount;
   final String PriceAfterDiscount; // Add the userId property
   final int stock;
-  Product(
-      {required this.id,
-      required this.name,
-      required this.price,
-      required this.categoryId,
-      required this.subcategoryId,
-      required this.userId,
-      required this.image,
-      required this.Discount,
-      required this.PriceAfterDiscount, // Include the userId in the constructor
-      required this.stock});
+  final String QuantityType;
+  Product({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.categoryId,
+    required this.subcategoryId,
+    required this.userId,
+    required this.image,
+    required this.Discount,
+    required this.PriceAfterDiscount, // Include the userId in the constructor
+    required this.stock,
+    required this.QuantityType,
+  });
 
   factory Product.fromMap(Map<String, dynamic> map, String id) {
     return Product(
@@ -108,7 +114,8 @@ class Product extends Equatable {
         PriceAfterDiscount:
             map['priceafterdiscount'] // Map the userId from the map
         ,
-        stock: map['stock']);
+        stock: map['stock'],
+        QuantityType: map['quantityType']);
   }
 
   Map<String, dynamic> toMap() {
@@ -122,7 +129,8 @@ class Product extends Equatable {
       'imageofproduct': image,
       'discount': Discount,
       'priceafterdiscount': PriceAfterDiscount, // Include userId in the map
-      'stock': stock
+      'stock': stock,
+      'quantityType': QuantityType
     };
   }
 
@@ -137,7 +145,8 @@ class Product extends Equatable {
         image,
         Discount,
         PriceAfterDiscount,
-        stock
+        stock,
+        QuantityType
       ];
 }
 
@@ -145,19 +154,19 @@ class OrderModel extends Equatable {
   final String id;
   final String userId;
   final String marchantId;
-  final List<Product> products;
+  final List<CartModel> kartModel;
   final double totalPrice;
   final double discount;
   final double finalPrice;
-  final String status; // e.g., 'pending', 'approved', 'shipped', etc.
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String status; // e.g., 'Pending', 'Packed', 'Delivered', Received.
+  final String createdAt;
+  final String updatedAt;
 
   OrderModel({
     required this.id,
     required this.userId,
     required this.marchantId,
-    required this.products,
+    required this.kartModel,
     required this.totalPrice,
     required this.discount,
     required this.finalPrice,
@@ -171,15 +180,16 @@ class OrderModel extends Equatable {
       id: id,
       userId: map['userId'],
       marchantId: map['marchantId'],
-      products: (map['products'] as List<dynamic>)
-          .map((item) => Product.fromMap(item, item['id']))
+      kartModel: (map['kart'] as List<dynamic>)
+          .map((item) =>
+              CartModel.fromMap(item as Map<String, dynamic>, item['userId']))
           .toList(),
       totalPrice: map['totalPrice'].toDouble(),
       discount: map['discount'].toDouble(),
       finalPrice: map['finalPrice'].toDouble(),
       status: map['status'],
-      createdAt: DateTime.parse(map['createdAt']),
-      updatedAt: DateTime.parse(map['updatedAt']),
+      createdAt: map['createdAt'].toString(),
+      updatedAt: map['updatedAt'].toString(),
     );
   }
 
@@ -188,13 +198,13 @@ class OrderModel extends Equatable {
       'id': id,
       'userId': userId,
       'marchantId': marchantId,
-      'products': products.map((product) => product.toMap()).toList(),
+      'kart': kartModel.map((cartItem) => cartItem.toMap()).toList(),
       'totalPrice': totalPrice,
       'discount': discount,
       'finalPrice': finalPrice,
       'status': status,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': createdAt.toString(),
+      'updatedAt': updatedAt.toString(),
     };
   }
 
@@ -203,7 +213,7 @@ class OrderModel extends Equatable {
         id,
         userId,
         marchantId,
-        products,
+        kartModel,
         totalPrice,
         discount,
         finalPrice,

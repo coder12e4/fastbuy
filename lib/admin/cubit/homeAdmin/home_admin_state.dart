@@ -37,3 +37,12 @@ final class LoadProductsFailed extends HomeAdminState {
 }
 
 final class HomeAdminFailed extends HomeAdminState {}
+
+final class OrderListLoading extends HomeAdminState {}
+
+final class OrderListSuccess extends HomeAdminState {
+  List<OrderModel> orderlist;
+  OrderListSuccess(this.orderlist);
+}
+
+final class OrderListFail extends HomeAdminState {}

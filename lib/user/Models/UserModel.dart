@@ -17,25 +17,26 @@ class UserModel {
   String? country;
   String? latitude;
   String? longitude;
+  String? userFcm;
 
   UserModel(
-    this.userName,
-    this.password,
-    this.houseName,
-    this.homeNo,
-    this.location,
-    this.district,
-    this.shopmo,
-    this.pin,
-    this.whatsAppNo,
-    this.contactNo2,
-    this.street,
-    this.place,
-    this.locality,
-    this.country,
-    this.latitude,
-    this.longitude,
-  );
+      this.userName,
+      this.password,
+      this.houseName,
+      this.homeNo,
+      this.location,
+      this.district,
+      this.shopmo,
+      this.pin,
+      this.whatsAppNo,
+      this.contactNo2,
+      this.street,
+      this.place,
+      this.locality,
+      this.country,
+      this.latitude,
+      this.longitude,
+      this.userFcm);
 
   // From JSON
   UserModel.fromJson(Map<String, dynamic> json)
@@ -56,7 +57,8 @@ class UserModel {
         locality = json['locality'],
         //  country = json['country'],
         latitude = json['latitude'],
-        longitude = json['longitude'];
+        longitude = json['longitude'],
+        userFcm = json['userFcm'];
 
   // To JSON
   Map<String, dynamic> toJson() {
@@ -77,6 +79,7 @@ class UserModel {
     //data['country'] = country;
     data['latitude'] = latitude;
     data['longitude'] = longitude;
+    data['userFcm'] = userFcm;
     return data;
   }
 }

@@ -15,8 +15,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<dynamic> getRegisterYourShop(AuthParams authParams) async {
     try {
       emit(AuthRegistrationLoading());
-      final Person person = await authRepo.getPerson(authParams);
-
+      await authRepo.getPerson(authParams);
       emit(AuthRegitrationSucees());
     } catch (e) {
       print(e);
@@ -28,12 +27,9 @@ class AuthCubit extends Cubit<AuthState> {
       String userName, String password, String fcm) async {
     try {
       emit(AuthLoginLoading());
-      print("FCM Token: $fcm");
 
-      // Attempt to login
       final Person person = await authRepo.LoginAdmin(userName, password);
 
-      // Check if the user exists in 'sellers' collection
       QuerySnapshot personSnapshot = await FirebaseFirestore.instance
           .collection('sellers')
           .where('userId', isEqualTo: person.id)
@@ -59,7 +55,6 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthLoginSucees(person.id));
       }
     } catch (e) {
-      print("Error: $e");
       emit(AuthLoginFail(e.toString()));
     }
   }
@@ -88,9 +83,7 @@ class AuthCubit extends Cubit<AuthState> {
         userPref.setString("sellerId", sellerId! ?? "");
         userPref.setString("sellerfcm", sellerfcm! ?? "");
       }
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<bool?> getBool(String? key) async {
@@ -98,7 +91,6 @@ class AuthCubit extends Cubit<AuthState> {
       SharedPreferences userId = await SharedPreferences.getInstance();
       return userId.getBool(key!) ?? false;
     } catch (e) {
-      print(e);
       return false;
     }
   }
@@ -118,7 +110,6 @@ class AuthCubit extends Cubit<AuthState> {
       SharedPreferences userId = await SharedPreferences.getInstance();
       return userId.getString('userId');
     } catch (e) {
-      print(e);
       return "";
     }
   }
@@ -128,7 +119,6 @@ class AuthCubit extends Cubit<AuthState> {
       SharedPreferences userId = await SharedPreferences.getInstance();
       return userId.getString('username321');
     } catch (e) {
-      print(e);
       return "";
     }
   }
@@ -138,7 +128,6 @@ class AuthCubit extends Cubit<AuthState> {
       SharedPreferences userId = await SharedPreferences.getInstance();
       return userId.getString('password321');
     } catch (e) {
-      print(e);
       return "";
     }
   }
@@ -148,7 +137,6 @@ class AuthCubit extends Cubit<AuthState> {
       SharedPreferences value = await SharedPreferences.getInstance();
       return value.getString(key);
     } catch (e) {
-      print(e);
       return "";
     }
   }
@@ -157,8 +145,6 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       SharedPreferences userdata = await SharedPreferences.getInstance();
       await userdata.clear();
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 }
