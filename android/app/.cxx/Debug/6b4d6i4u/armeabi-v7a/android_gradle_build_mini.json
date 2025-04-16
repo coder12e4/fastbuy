@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/zeocodes/snap/flutter/common/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/usr/bin/ninja",
+      "-C",
+      "/home/zeocodes/AndroidStudioProjects/fastbuy/android/app/.cxx/Debug/6b4d6i4u/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/usr/bin/ninja",
+    "-C",
+    "/home/zeocodes/AndroidStudioProjects/fastbuy/android/app/.cxx/Debug/6b4d6i4u/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
