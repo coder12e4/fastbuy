@@ -22,7 +22,6 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   late String? categoryImage;
-  bool _isUploading = false;
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
@@ -45,7 +44,6 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void _addCategory(BuildContext context, String image, String? userId) async {
     if (_formKey.currentState!.validate()) {
-      String? userid = await context.read<AuthCubit>().getUserId();
       final category = Category(
           id: '', name: _nameController.text, userId: userId!, image: image);
       categoryCubit.addCategory(category, userId, image);
@@ -57,12 +55,12 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget Search() {
     return Row(
       children: [
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Expanded(
           child: TextField(
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: const TextStyle(fontSize: 14, color: Colors.black),
             controller: _searchController,
             onChanged: (value) {
               setState(() {
@@ -98,7 +96,7 @@ class _CategoryPageState extends State<CategoryPage> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
       ],
@@ -109,11 +107,11 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categories'),
+        title: const Text('Categories'),
         backgroundColor: Colors.white,
       ),
       body: Container(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: BlocProvider<CategoryCubit>(
           create: (context) => CategoryCubit(),
           child: BlocListener<CategoryCubit, CategoryState>(
@@ -135,8 +133,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),
@@ -146,7 +144,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Padding(
@@ -157,7 +155,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           children: [
                             Text(
                               "Total Categories: ${categories.length}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700),
@@ -225,8 +223,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),
@@ -236,8 +234,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),
@@ -250,7 +248,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             "Add New Category",
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w600),
@@ -290,106 +288,96 @@ class _CategoryPageState extends State<CategoryPage> {
                               ],
                             ),
                           ),
-                          Container(
-                            child: BlocProvider<ImageUploadingButtonCubit>(
-                              create: (context) => ImageUploadingButtonCubit(),
-                              child: BlocListener<ImageUploadingButtonCubit,
+                          BlocProvider<ImageUploadingButtonCubit>(
+                            create: (context) => ImageUploadingButtonCubit(),
+                            child: BlocListener<ImageUploadingButtonCubit,
+                                ImageUploadingButtonState>(
+                              bloc: imageUploadingButtonCubit,
+                              listener: (context, state) {
+                                if (state is ImageUploadingButtonInitial) {
+                                } else if (state
+                                    is ImageUploadingButtonLoading) {
+                                } else if (state
+                                    is ImageUploadingButtonSuccess) {
+                                  categoryImage = state.imageUrl;
+                                } else if (state
+                                    is ImageUploadingButtonFailed) {}
+                              },
+                              child: BlocBuilder<ImageUploadingButtonCubit,
                                   ImageUploadingButtonState>(
                                 bloc: imageUploadingButtonCubit,
-                                listener: (context, state) {
+                                builder: (context, state) {
                                   if (state is ImageUploadingButtonInitial) {
-                                  } else if (state
-                                      is ImageUploadingButtonLoading) {
-                                  } else if (state
-                                      is ImageUploadingButtonSuccess) {
-                                    categoryImage = state.imageUrl;
-                                  } else if (state
-                                      is ImageUploadingButtonFailed) {}
-                                },
-                                child: BlocBuilder<ImageUploadingButtonCubit,
-                                    ImageUploadingButtonState>(
-                                  bloc: imageUploadingButtonCubit,
-                                  builder: (context, state) {
-                                    if (state is ImageUploadingButtonInitial) {
-                                      return Container(
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                                height: 100,
-                                                width: 100,
-                                                child: Center(
-                                                    child: Icon(
-                                                  Icons.upload,
-                                                  size: 24,
-                                                  color: Colors.green,
-                                                ))),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  if (_nameController
-                                                      .text.isEmpty) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                "Please enter category")));
-                                                  } else {
-                                                    imageUploadingButtonCubit
-                                                        .showPicker(
-                                                            context,
-                                                            _nameController
-                                                                .text);
-                                                  }
-                                                },
-                                                child: Text("Select Image"))
-                                          ],
-                                        ),
-                                      );
-                                    } else if (state
-                                        is ImageUploadingButtonLoading) {
-                                      return Center(
-                                        child: LinearProgressIndicator(
-                                          value: state.prograss,
-                                        ),
-                                      );
-                                    } else if (state
-                                        is ImageUploadingButtonSuccess) {
-                                      return Container(
-                                        child: Column(
-                                          children: [
-                                            Image.network(
-                                              state.imageUrl,
+                                    return Container(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
                                               height: 100,
                                               width: 100,
-                                            ),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  if (_nameController
-                                                      .text.isEmpty) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                "Please enter category")));
-                                                  } else {
-                                                    imageUploadingButtonCubit
-                                                        .showPicker(
-                                                            context,
-                                                            _nameController
-                                                                .text);
-                                                  }
-                                                },
-                                                child: Text("Select Image"))
-                                          ],
+                                              child: Center(
+                                                  child: Icon(
+                                                Icons.upload,
+                                                size: 24,
+                                                color: Colors.green,
+                                              ))),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                if (_nameController
+                                                    .text.isEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(const SnackBar(
+                                                          content: Text(
+                                                              "Please enter category")));
+                                                } else {
+                                                  imageUploadingButtonCubit
+                                                      .showPicker(context,
+                                                          _nameController.text);
+                                                }
+                                              },
+                                              child: const Text("Select Image"))
+                                        ],
+                                      ),
+                                    );
+                                  } else if (state
+                                      is ImageUploadingButtonLoading) {
+                                    return Center(
+                                      child: LinearProgressIndicator(
+                                        value: state.prograss,
+                                      ),
+                                    );
+                                  } else if (state
+                                      is ImageUploadingButtonSuccess) {
+                                    return Column(
+                                      children: [
+                                        Image.network(
+                                          state.imageUrl,
+                                          height: 100,
+                                          width: 100,
                                         ),
-                                      );
-                                    } else if (state
-                                        is ImageUploadingButtonFailed) {
-                                      return Text(state.error);
-                                    } else {
-                                      return const Text("false");
-                                    }
-                                  },
-                                ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              if (_nameController
+                                                  .text.isEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(const SnackBar(
+                                                        content: Text(
+                                                            "Please enter category")));
+                                              } else {
+                                                imageUploadingButtonCubit
+                                                    .showPicker(context,
+                                                        _nameController.text);
+                                              }
+                                            },
+                                            child: Text("Select Image"))
+                                      ],
+                                    );
+                                  } else if (state
+                                      is ImageUploadingButtonFailed) {
+                                    return Text(state.error);
+                                  } else {
+                                    return const Text("false");
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -421,8 +409,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),
@@ -432,8 +420,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),
@@ -443,8 +431,8 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Column(
                     children: [
                       Search(),
-                      Expanded(
-                        child: const Center(
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       ),

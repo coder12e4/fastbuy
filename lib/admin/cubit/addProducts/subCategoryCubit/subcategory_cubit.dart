@@ -74,7 +74,6 @@ class SubcategoryCubit extends Cubit<SubcategoryState> {
       emit(SubcategoryListSuccess(list));
     } catch (e) {
       emit(SubcategoryFail(e.toString()));
-      print('Error occurred: $e');
     }
   }
 }

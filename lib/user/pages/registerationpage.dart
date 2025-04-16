@@ -58,7 +58,6 @@ class RegistrationState extends State {
   void initState() {
     auth_cubit = LoginUserCubit();
     auth_cubit.getAllsellers();
-    // TODO: implement initState
     super.initState();
   }
 
@@ -86,8 +85,8 @@ class RegistrationState extends State {
                   backgroundColor: Colors.green,
                 ));
 
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => Login()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const Login()));
               } else if (state is LoginUserFail) {
               } else if (state is loadingdeleveryLocation) {
               } else if (state is loadingdeleverySuceess) {
@@ -306,7 +305,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               width: 30,
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -402,7 +401,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               height: 8,
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -439,13 +438,13 @@ class RegistrationState extends State {
                                     border: Border.all(
                                         color: Colors.black, width: 1),
                                   ),
-                                  child: Text("logitude"),
+                                  child: const Text("longitude"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
                                     auth_cubit.getCurrentLocationDetails();
                                   },
-                                  child: SizedBox(
+                                  child: const SizedBox(
                                     width: 100,
                                     height: 25,
                                     child: Center(child: Text("Add Location")),
@@ -462,7 +461,7 @@ class RegistrationState extends State {
                                 onPressed: () {
                                   if (lat == "") {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content:
                                                 Text("Please add location")));
                                   } else {
@@ -713,7 +712,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               width: 13,
                             ),
-                            Row(
+                            const Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -808,7 +807,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               height: 8,
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -834,7 +833,7 @@ class RegistrationState extends State {
                                     border: Border.all(
                                         color: Colors.black, width: 1),
                                   ),
-                                  child: Text("latitude"),
+                                  child: const Text("latitude"),
                                 ),
                                 Container(
                                   height: 45,
@@ -845,13 +844,13 @@ class RegistrationState extends State {
                                     border: Border.all(
                                         color: Colors.black, width: 1),
                                   ),
-                                  child: Text("logitude"),
+                                  child: const Text("longitude"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
                                     auth_cubit.getCurrentLocationDetails();
                                   },
-                                  child: SizedBox(
+                                  child: const SizedBox(
                                     width: 100,
                                     height: 28,
                                     child: Center(
@@ -871,7 +870,7 @@ class RegistrationState extends State {
                                 onPressed: () {
                                   if (lat == "") {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content:
                                                 Text("Please add location")));
                                   } else {
@@ -1078,7 +1077,7 @@ class RegistrationState extends State {
                                     },
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 18,
                                 ),
                                 Expanded(
@@ -1106,7 +1105,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               height: 14,
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -1133,8 +1132,8 @@ class RegistrationState extends State {
                                   elevation: 4,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   dropdownColor: Colors.blueAccent[50],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   items: shopModelList.map((shopModel items) {
                                     return DropdownMenuItem<shopModel>(
                                       value: items,
@@ -1201,7 +1200,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               height: 8,
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -1244,7 +1243,7 @@ class RegistrationState extends State {
                                   onPressed: () async {
                                     auth_cubit.getCurrentLocationDetails();
                                   },
-                                  child: SizedBox(
+                                  child: const SizedBox(
                                     width: 100,
                                     height: 25,
                                     child: Center(child: Text("Add Location")),
@@ -1261,7 +1260,7 @@ class RegistrationState extends State {
                                 onPressed: () {
                                   if (lat == "") {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content:
                                                 Text("Please add location")));
                                   } else {
@@ -1468,7 +1467,7 @@ class RegistrationState extends State {
                                     },
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 18,
                                 ),
                                 Expanded(
@@ -1496,7 +1495,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               width: 30,
                             ),
-                            Text("Select your seller"),
+                            const Text("Select your seller"),
                             const SizedBox(
                               width: 30,
                             ),
@@ -1514,8 +1513,8 @@ class RegistrationState extends State {
                                   elevation: 4,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   dropdownColor: Colors.blueAccent[50],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   items: shopModelList.map((shopModel items) {
                                     return DropdownMenuItem<shopModel>(
                                       value: items,
@@ -1582,7 +1581,7 @@ class RegistrationState extends State {
                             const SizedBox(
                               height: 8,
                             ),
-                            Text("Add your Exact delivery location"),
+                            const Text("Add your Exact delivery location"),
                             const SizedBox(
                               height: 8,
                             ),
@@ -1599,7 +1598,7 @@ class RegistrationState extends State {
                                     border: Border.all(
                                         color: Colors.black, width: 1),
                                   ),
-                                  child: Text("latitude"),
+                                  child: const Text("latitude"),
                                 ),
                                 Container(
                                   height: 45,
@@ -1610,13 +1609,13 @@ class RegistrationState extends State {
                                     border: Border.all(
                                         color: Colors.black, width: 1),
                                   ),
-                                  child: Text("logitude"),
+                                  child: const Text("longitude"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
                                     auth_cubit.getCurrentLocationDetails();
                                   },
-                                  child: SizedBox(
+                                  child: const SizedBox(
                                     width: 100,
                                     height: 25,
                                     child: Center(child: Text("try again")),
@@ -1633,7 +1632,7 @@ class RegistrationState extends State {
                                 onPressed: () {
                                   if (lat == "") {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content:
                                                 Text("Please add location")));
                                   } else {

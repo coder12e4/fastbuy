@@ -30,13 +30,7 @@ class ProductViewState extends State {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.shopping_cart),
-                    onPressed: () {
-                      /*      Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => CartPage(),
-                            ),
-                          );        */
-                    },
+                    onPressed: () {},
                   ),
                   Positioned(
                     top: 2,

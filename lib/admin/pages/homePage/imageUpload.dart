@@ -29,7 +29,6 @@ class _ImageUploadsState extends State<ImageUploads> {
 
   @override
   void initState() {
-    // TODO: implement initState
     signInAnonymously();
     super.initState();
   }
@@ -69,14 +68,14 @@ class _ImageUploadsState extends State<ImageUploads> {
                 Center(
                   child: Text(
                     '${(100 * prograss).roundToDouble()}%',
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 )
               ],
             ),
           );
         } else {
-          return SizedBox();
+          return const SizedBox();
         }
       });
 
@@ -89,55 +88,7 @@ class _ImageUploadsState extends State<ImageUploads> {
     });
   }
 
-  File? _photo;
-  final ImagePicker _picker = ImagePicker();
   String? error;
-/*
-  Future imgFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        uploadFile();
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future imgFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    setState(() {
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        uploadFile();
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-*/
-
-/*
-  Future uploadFile() async {
-    if (_photo == null) return;
-    final fileName = basename(_photo!.path);
-    final destination = 'images/$fileName';
-
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images/$destination');
-      await ref.putFile(_photo!);
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-      });
-      print('error occured');
-    }
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +99,10 @@ class _ImageUploadsState extends State<ImageUploads> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           if (platformFile!.path != null)
-            Container(
-              child: Image.file(
-                File(platformFile!.path!),
-                height: 100,
-                width: 100,
-              ),
+            Image.file(
+              File(platformFile!.path!),
+              height: 100,
+              width: 100,
             ),
           GestureDetector(
             onTap: () {
@@ -165,7 +114,7 @@ class _ImageUploadsState extends State<ImageUploads> {
               color: Colors.black,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 32,
           ),
           Text("$error"),
@@ -174,7 +123,7 @@ class _ImageUploadsState extends State<ImageUploads> {
               onPressed: () {
                 uploadfile();
               },
-              child: Center(
+              child: const Center(
                 child: Text("Upload"),
               ))
         ],
@@ -187,26 +136,24 @@ class _ImageUploadsState extends State<ImageUploads> {
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Gallery'),
-                      onTap: () {
-                        selectFile();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Gallery'),
                     onTap: () {
                       selectFile();
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    selectFile();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });

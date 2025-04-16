@@ -4,15 +4,11 @@ import 'package:fastbuy/admin/pages/homePage/homePageAdmin.dart';
 import 'package:fastbuy/splashScreen/spash_cubit.dart';
 import 'package:fastbuy/user/pages/loginpage.dart';
 import 'package:fastbuy/user/userCubit/loginCubit/login_user_cubit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../admin/pages/loginAdmin.dart';
 import '../admin/repository/adminAuthRepository.dart';
 
 import '../user/pages/homepage.dart';
-import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

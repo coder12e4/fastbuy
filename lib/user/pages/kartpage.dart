@@ -53,9 +53,9 @@ class _CartPageState extends State<CartPage> {
               if (state is CartInitial) {
                 return Container();
               } else if (state is CartLoading) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (state is CartSuccess) {
-                return Container(
+                return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Column(
@@ -111,11 +111,9 @@ class _CartPageState extends State<CartPage> {
                   ),
                 );
               } else if (state is CartFail) {
-                return Container(
-                  child: ErrorWidget(state.error),
-                );
+                return ErrorWidget(state.error);
               } else if (state is BookingIsLoading) {
-                return Container(
+                return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: const Column(
@@ -125,18 +123,18 @@ class _CartPageState extends State<CartPage> {
                   ),
                 );
               } else if (state is BookingIsSuccess) {
-                return Container(
+                return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Center(
                           child: Text("Booking Success"),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(14),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -166,7 +164,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 );
               } else if (state is BookingIsFailed) {
-                return Container(
+                return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Column(

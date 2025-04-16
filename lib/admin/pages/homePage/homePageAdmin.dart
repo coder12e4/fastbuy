@@ -281,54 +281,8 @@ class _HomepageadminState extends State<Homepageadmin> {
                           Icons.shopping_cart,
                           color: Colors.white,
                         ),
-                        onPressed: () {
-                          /*  Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => CartPage(
-                                userId: userId,
-                              ),
-                            ),
-                          );
-                        */
-                        },
+                        onPressed: () {},
                       ),
-                      /*    Positioned(
-                        top: 2,
-                        right: -8,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            width: 14,
-                            height: 14,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(13),
-                                color: Colors.red),
-                            child: Center(
-                              child: BlocProvider<HomeUserCubit>(
-                                create: (context) => homeUserCubit1,
-                                child:
-                                BlocBuilder<HomeUserCubit, HomeUserState>(
-                                  builder: (context, state) {
-                                    if (state is cartCountStateHome) {
-                                      return Text(
-                                        state.count,
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 10),
-                                      );
-                                    } else {
-                                      return Container(
-                                        color: Colors.green,
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                  */
                     ],
                   ),
                 ),

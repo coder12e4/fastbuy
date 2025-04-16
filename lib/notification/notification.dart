@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -14,11 +11,7 @@ class FirebaseApi {
     importance: Importance.defaultImportance,
   );
   final _localNotications = FlutterLocalNotificationsPlugin();
-  Future<void> handleBackgroudMessage(RemoteMessage message) async {
-    print("Title:${message.notification?.title}");
-    print("body:${message.notification?.body}");
-    print("Payload:${message.data}");
-  }
+  Future<void> handleBackgroudMessage(RemoteMessage message) async {}
 
   Future initPushNotifications() async {
     await FirebaseMessaging.instance
@@ -60,18 +53,6 @@ class FirebaseApi {
     await platform?.createNotificationChannel(_androidChannel);
   }
 
-  /*Future<void> initNotifications() async {
-    await _firebasemessageing.requestPermission();
-    await FirebaseMessaging.instance.setAutoInitEnabled(true);
-    //final fcmToken = await _firebasemessageing.getToken();
-    // print("token --  $fcmToken");
-    await initPushNotifications();
-    await initLocalNotifications();
-    FirebaseMessaging.onBackgroundMessage(
-        (message) => handleBackgroudMessage(message));
-  }
-  */
-
   Future<void> initNotifications() async {
     try {
       await Future.wait([
@@ -83,8 +64,6 @@ class FirebaseApi {
 
       FirebaseMessaging.onBackgroundMessage(
           (message) => handleBackgroudMessage(message));
-    } catch (e) {
-      print("Error initializing notifications: $e");
-    }
+    } catch (e) {}
   }
 }

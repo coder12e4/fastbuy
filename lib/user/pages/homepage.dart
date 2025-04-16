@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fastbuy/core/fbtheme.dart';
 import 'package:fastbuy/user/pages/Profile/ProfilePage.dart';
 import 'package:fastbuy/user/pages/loginpage.dart';
 import 'package:fastbuy/user/pages/productview.dart';
@@ -12,18 +9,10 @@ import 'package:fastbuy/common/OrderItems/OrderItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hexcolor/hexcolor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../admin/adminModels/addProductModel/addproduct.dart';
 import '../../core/constants.dart';
 import '../../core/widgets/emptyoralert.dart';
 import 'kartpage.dart';
-
-import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 
 class DropdownDialog extends StatelessWidget {
   final Product product;
@@ -91,14 +80,15 @@ class DropdownDialog extends StatelessWidget {
                           width: 80,
                           height: 40,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(20),
                                   bottomLeft: Radius.circular(20))),
                           child: Text(
-                            product.Discount + "% off",
-                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            "${product.Discount}% off",
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
                           ),
                         ))
                   ],
@@ -108,7 +98,7 @@ class DropdownDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Price:',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
@@ -144,13 +134,14 @@ class DropdownDialog extends StatelessWidget {
                   ),
                   Text(
                     "${double.parse(product.PriceAfterDiscount).toStringAsFixed(2)}/kg",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   )
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Container(
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,7 +212,7 @@ class DropdownDialog extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Mg",
+                        const Text("Mg",
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         DropdownButton<int>(
@@ -265,7 +256,7 @@ class DropdownDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -275,12 +266,12 @@ class DropdownDialog extends StatelessWidget {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "${total.toStringAsFixed(2)}",
+                    total.toStringAsFixed(2),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   )
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           );
         },
@@ -293,21 +284,21 @@ class DropdownDialog extends StatelessWidget {
             TextButton(
               onPressed: () {
                 cart
-                    .addproductToKart(userId, product, totalQuantity.toString(),
-                        total.toString())
+                    .addproductToKart(userId, product, total.toString(),
+                        totalQuantity.toString())
                     .then((value) {
                   homeUserCubit.fetchCategories(sellerId, userId);
                 }).then((value) {
                   Navigator.of(context).pop();
                 });
               },
-              child: Text('Add to Cart'),
+              child: const Text('Add to Cart'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         )
@@ -663,7 +654,7 @@ class _HomePageUserState extends State<HomePageUser> {
             unselectedItemColor: Colors.grey,
             unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
             selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-            selectedItemColor: Colors.black,
+            selectedItemColor: Colors.white,
             onTap: _onItemTapped,
             backgroundColor: FbColors.primaryColor,
           ),
@@ -688,11 +679,10 @@ class _HomePageUserState extends State<HomePageUser> {
                 } else if (state is HomeUserProductsSuc) {
                   listProducts.clear();
                   listProducts = state.products;
-                  print(listProducts.length);
+
                   int? k = cartCubit.kartLength;
                   isGridView = false;
                   isGridViewSubCategory = false;
-                  print(k);
                 } else if (state is HomeUserProductsFail) {
                 } else if (state is UserOrderLoading) {
                 } else if (state is UserOrderSuccess) {
@@ -873,9 +863,10 @@ class _HomePageUserState extends State<HomePageUser> {
                                                         (context, index) {
                                                       return Container(
                                                         padding:
-                                                            EdgeInsets.all(4),
-                                                        margin:
-                                                            EdgeInsets.all(4),
+                                                            const EdgeInsets
+                                                                .all(4),
+                                                        margin: const EdgeInsets
+                                                            .all(4),
                                                         decoration: BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
@@ -1116,11 +1107,11 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 4,
                                             ),
                                             Text(listCategoris[index].name,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 12,
                                                     fontWeight:
@@ -1447,11 +1438,11 @@ class _HomePageUserState extends State<HomePageUser> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 4,
                                               ),
                                               Text(listCategoris[index].name,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 12,
                                                       fontWeight:
@@ -1522,7 +1513,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -1553,7 +1544,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -1581,7 +1572,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -1612,7 +1603,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -1751,7 +1742,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 listCategoris[index].id);
                                           },
                                           child: Container(
-                                            margin: EdgeInsets.only(
+                                            margin: const EdgeInsets.only(
                                                 left: 14,
                                                 right: 14,
                                                 top: 4,
@@ -1825,7 +1816,7 @@ class _HomePageUserState extends State<HomePageUser> {
 
                             // Animated Container
                             AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                               height: isGridViewSubCategory
                                   ? ((listSubCategoris.length + 3) ~/ 4) * 100
@@ -1878,7 +1869,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
@@ -1943,7 +1934,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -2239,7 +2230,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -2270,7 +2261,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -2361,8 +2352,10 @@ class _HomePageUserState extends State<HomePageUser> {
                                             top: 0,
                                             right: 0,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 8, vertical: 4),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
                                               decoration: const BoxDecoration(
                                                 color: Colors.green,
                                                 borderRadius: BorderRadius.only(

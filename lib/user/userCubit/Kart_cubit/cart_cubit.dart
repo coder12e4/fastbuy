@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:fastbuy/service/get_serverkey.dart';
-import 'package:http/http.dart' as http;
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
@@ -9,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../admin/adminModels/addProductModel/addproduct.dart';
 import '../../../common/SentNotification.dart';
 import '../../Models/Cartmodel.dart';
-
 part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
@@ -33,30 +29,6 @@ class CartCubit extends Cubit<CartState> {
 
         emit(CartSuccess(CartList));
       });
-    } catch (e) {
-      emit(CartFail(e.toString()));
-    }
-  }
-
-  Future<void> getCartByUserIdAndClear(String userId) async {
-    emit(CartLoading());
-    try {
-      // Fetch and clear the cart items
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection("cart")
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      // Loop through the documents and delete them
-      for (var doc in querySnapshot.docs) {
-        await FirebaseFirestore.instance
-            .collection("cart")
-            .doc(doc.id)
-            .delete();
-      }
-
-      // Emit CartSuccess with an empty list (cart is now cleared)
-      emit(CartSuccess([]));
     } catch (e) {
       emit(CartFail(e.toString()));
     }
@@ -111,11 +83,17 @@ class CartCubit extends Cubit<CartState> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? serverKey = sharedPreferences.getString("serverkey");
 
-    // Replace with your FCM server key
-    final url =
+    final documentSnapshot = await FirebaseFirestore.instance
+        .collection('sellers') // Replace with your collection name
+        .where("userId", isEqualTo: order.marchantId)
+        .get();
+
+    var sellerDoc = documentSnapshot.docs.first;
+    String sellerfcm = sellerDoc['sellerfcm'];
+
+    const url =
         'https://fcm.googleapis.com/v1/projects/fastbuy-55678/messages:send';
 
-    // Add order to Firestore
     try {
       String? title;
       String? payloadbody;
@@ -135,14 +113,15 @@ class CartCubit extends Cubit<CartState> {
           status: "Pending",
           createdAt: DateTime.timestamp().toString(),
           updatedAt: DateTime.timestamp().toString());
-      SentNotifications sentNotifications =
-          SentNotifications(order.kartModel[0].product.userId, ordermodel);
+
+      SentNotifications sentNotifications = SentNotifications(
+          order.kartModel[0].product.userId, ordermodel, sellerfcm);
+
       sentNotifications.sentNotification(title, payloadbody);
 
       emit(CartSuccess(listCartUser));
     } catch (e) {
       emit(BookingIsFailed());
-      print('Failed to add order to Firestore: $e');
     }
   }
 

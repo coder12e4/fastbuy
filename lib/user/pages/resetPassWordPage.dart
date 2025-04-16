@@ -11,8 +11,8 @@ class resetPassWord extends StatefulWidget {
 }
 
 class _resetPassWordState extends State<resetPassWord> {
-  TextEditingController emailtxtController = TextEditingController();
-  TextEditingController passwordtxtController = TextEditingController();
+  final emailtxtController = TextEditingController();
+  final passwordtxtController = TextEditingController();
 
   late LoginUserCubit loginUserCubit;
 

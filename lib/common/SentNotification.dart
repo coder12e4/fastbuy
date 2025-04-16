@@ -7,52 +7,48 @@ import '../admin/adminModels/addProductModel/addproduct.dart';
 class SentNotifications {
   String? marchantId;
   OrderModel? orderModel;
-  SentNotifications(this.marchantId, this.orderModel);
+  String? fcm;
+  SentNotifications(this.marchantId, this.orderModel, this.fcm);
   final url =
       'https://fcm.googleapis.com/v1/projects/fastbuy-55678/messages:send';
 
   Future sentNotification(String? title, String? payloadbody) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? serverKey = sharedPreferences.getString("serverkey");
-    final documentSnapshot = await FirebaseFirestore.instance
-        .collection('sellers') // Replace with your collection name
-        .where("userId", isEqualTo: marchantId)
-        .get();
-    //kart state must be change
-    var sellerDoc = documentSnapshot.docs.first;
-    String sellerfcm = sellerDoc['sellerfcm'];
-    // Prepare headers and body for FCM notification
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $serverKey',
-    };
 
-    final body = jsonEncode({
-      "message": {
-        "token": sellerfcm,
-        "notification": {"title": title, "body": payloadbody},
-        "data": {"story_id": "story_12345"},
-        "android": {
-          "notification": {"click_action": "TOP_STORY_ACTIVITY"}
-        },
-        "apns": {
-          "payload": {
-            "aps": {"category": "NEW_MESSAGE_CATEGORY"}
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $serverKey',
+      };
+      final body = jsonEncode({
+        "message": {
+          "token": fcm,
+          "notification": {"title": title, "body": payloadbody},
+          "data": {"story_id": "story_12345"},
+          "android": {
+            "notification": {"click_action": "TOP_STORY_ACTIVITY"}
+          },
+          "apns": {
+            "payload": {
+              "aps": {"category": "NEW_MESSAGE_CATEGORY"}
+            }
           }
         }
-      }
-    });
-    // Send FCM notification
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
+      });
+      // Send FCM notification
+      final response =
+          await http.post(Uri.parse(url), headers: headers, body: body);
 
-    if (response.statusCode == 200) {
-      await saveNotificationToFirestore(orderModel!);
-      //   await getCartByUserIdAndClear(order.userId);
-      print('Notification sent to user');
-    } else {
-      print(response.body);
-      print('Failed to send notification');
+      if (response.statusCode == 200) {
+        await saveNotificationToFirestore(orderModel!);
+        // await getCartByUserIdAndClear(order.userId);
+        print('Notification sent to user');
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 

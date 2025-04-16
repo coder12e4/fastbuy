@@ -156,7 +156,7 @@ class ImageUploadingButtonCubit extends Cubit<ImageUploadingButtonState> {
                       uploadAndSaveImage("category", name, true);
                       Navigator.of(context).pop();
                     }),
-                new ListTile(
+                ListTile(
                   leading: const Icon(Icons.photo_camera),
                   title: const Text('Camera'),
                   onTap: () {

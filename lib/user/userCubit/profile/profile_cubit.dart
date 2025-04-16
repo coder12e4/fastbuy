@@ -85,8 +85,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         // Location services are not enabled, return an appropriate message
-        String error =
-            "Location services are disabled. Please enable them to get location details.";
       }
       // Check for location permissions
       LocationPermission permission = await Geolocator.checkPermission();

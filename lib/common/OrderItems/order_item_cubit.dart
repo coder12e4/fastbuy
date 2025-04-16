@@ -35,16 +35,16 @@ class OrderItemCubit extends Cubit<OrderItemState> {
         sellerfcm = sellerDoc['selectedSeller']['sellerfcm'];
       } else {
         final documentSnapshot = await FirebaseFirestore.instance
-            .collection('sellers') // Replace with your collection name
-            .where("userId", isEqualTo: marchantId)
+            .collection('users') // Replace with your collection name
+            .where("userId", isEqualTo: orderModel!.userId)
             .get();
         //kart state must be change
-        var sellerDoc = documentSnapshot.docs.first;
-        sellerfcm = sellerDoc['sellerfcm'];
+        var userDoc = documentSnapshot.docs.first;
+        sellerfcm = userDoc['userFcm'];
       }
 
       SentNotifications sentNotifications =
-          SentNotifications(marchantId, orderModel);
+          SentNotifications(marchantId, orderModel, sellerfcm);
       sentNotifications.sentNotification(title, payloadbody);
 
       await FirebaseFirestore.instance
@@ -54,7 +54,7 @@ class OrderItemCubit extends Cubit<OrderItemState> {
         'status': newStatus,
         'updatedAt': DateTime.now(), // Optional: track when status changed
       });
-
+      upDateStatus(newStatus);
       print('Order status updated successfully');
     } catch (e) {
       print('Failed to update order status: $e');

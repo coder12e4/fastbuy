@@ -7,10 +7,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../admin/adminModels/regmodel.dart';
-import '../service/get_serverkey.dart';
-
 part 'spash_state.dart';
 
 class SpashCubit extends Cubit<SpashState> {

@@ -109,7 +109,6 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
     if (pickedFile != null) {
       return File(pickedFile.path);
     } else {
-      print('No image selected.');
       return null;
     }
   }
@@ -124,7 +123,6 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
       String downloadURL = await storageReference.getDownloadURL();
       return downloadURL;
     } catch (e) {
-      print('Error uploading image: $e');
       return null;
     }
   }
@@ -187,8 +185,6 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
 
       emit(LoadProductsSuccess(list));
     } catch (e) {
-      print('Error occurred: $e');
-
       // Check if error is related to Firestore indexing
       if (e is FirebaseException && e.message != null) {
         final errorMessage = e.message!;
