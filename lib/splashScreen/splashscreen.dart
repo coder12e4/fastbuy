@@ -7,7 +7,6 @@ import 'package:fastbuy/user/userCubit/loginCubit/login_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../admin/repository/adminAuthRepository.dart';
-
 import '../user/pages/homepage.dart';
 
 class SplashScreen extends StatefulWidget {

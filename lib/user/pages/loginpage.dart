@@ -65,7 +65,7 @@ class LoginState extends State<Login> {
               } else if (state is LoginUserFail) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:
-                        Text("Somethig is wrong try again " + state.error)));
+                        Text("Somethig is wrong try again ${state.error}")));
               } else {}
             },
             child: BlocBuilder<LoginUserCubit, LoginUserState>(
@@ -77,7 +77,7 @@ class LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,7 +163,8 @@ class LoginState extends State<Login> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => resetPassWord()));
+                                    builder: (context) =>
+                                        const resetPassWord()));
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -207,16 +208,16 @@ class LoginState extends State<Login> {
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AdminLogin()));
+                                    builder: (context) => const AdminLogin()));
                           },
                           child: Text(
                             "Login as a seller",
@@ -236,7 +237,7 @@ class LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -322,7 +323,8 @@ class LoginState extends State<Login> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => resetPassWord()));
+                                    builder: (context) =>
+                                        const resetPassWord()));
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -351,7 +353,7 @@ class LoginState extends State<Login> {
                                   });
                                 }*/
                               },
-                              child: SizedBox(
+                              child: const SizedBox(
                                 height: 18,
                                 width: 18,
                                 child: CircularProgressIndicator(
@@ -375,16 +377,16 @@ class LoginState extends State<Login> {
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AdminLogin()));
+                                    builder: (context) => const AdminLogin()));
                           },
                           child: Text(
                             "Login as a seller",
@@ -406,7 +408,7 @@ class LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -492,7 +494,8 @@ class LoginState extends State<Login> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => resetPassWord()));
+                                    builder: (context) =>
+                                        const resetPassWord()));
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -536,16 +539,16 @@ class LoginState extends State<Login> {
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AdminLogin()));
+                                    builder: (context) => const AdminLogin()));
                           },
                           child: Text(
                             "Login as a seller",

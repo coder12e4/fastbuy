@@ -27,7 +27,7 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
     try {
       emit(HomeAdminLoading());
 
-      _CategorisStreams = await FirebaseFirestore.instance
+      _CategorisStreams = FirebaseFirestore.instance
           .collection("categories")
           .where("userId", isEqualTo: userId)
           .snapshots()
@@ -64,14 +64,13 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
     try {
       emit(LoadSubcategorisLoding());
 
-      _SubcategoryStreams = await FirebaseFirestore.instance
+      _SubcategoryStreams = FirebaseFirestore.instance
           .collection("subcategories")
           .where("categoryId", isEqualTo: categoryId)
           .snapshots()
           .listen((snapShots) {
         List<Subcategory> subcategories = snapShots.docs
-            .map((doc) =>
-                Subcategory.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+            .map((doc) => Subcategory.fromMap(doc.data(), doc.id))
             .toList();
 
         emit(LoadSubcategorisSuccess(
@@ -165,18 +164,18 @@ class HomeAdminCubit extends Cubit<HomeAdminState> {
 
   void loadProductsformSearch(String searchQuery, String? sellerId) async {
     try {
-      FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
       List<Product> list = [];
       emit(LoadProductsLoading());
       list.clear();
       if (searchQuery.isEmpty) {
         list = [];
       } else {
-        QuerySnapshot querySnapshot = await _firestore
+        QuerySnapshot querySnapshot = await firestore
             .collection('products')
             .where('userId', isEqualTo: sellerId)
             .where('name', isGreaterThanOrEqualTo: searchQuery)
-            .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+            .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff')
             .get();
         list = querySnapshot.docs.map((doc) {
           return Product.fromMap(doc.data() as Map<String, dynamic>, doc.id);

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../adminModels/regmodel.dart';
 
 abstract class AdminAuthRepository {
@@ -45,7 +44,6 @@ class adminAuthRepo extends AdminAuthRepository {
   @override
   Future<Person> LoginAdmin(String userName, String password) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-
     UserCredential userCredential = await auth.signInWithEmailAndPassword(
         email: userName, password: password);
     User? user = userCredential.user;

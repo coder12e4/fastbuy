@@ -105,7 +105,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.best)
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
 
       // Get the address from the coordinates
       List<Placemark> placemarks = await placemarkFromCoordinates(

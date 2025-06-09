@@ -333,8 +333,8 @@ class RegistrationState extends State {
                                   elevation: 4,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   dropdownColor: Colors.blueAccent[50],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   items: shopModelList.map((shopModel items) {
                                     return DropdownMenuItem<shopModel>(
                                       value: items,
@@ -504,7 +504,7 @@ class RegistrationState extends State {
                     ),
                   );
                 } else if (state is LoginUserFail) {
-                  return Center(
+                  return const Center(
                     child: Text("Something went wrong"),
                   );
                 } else if (state is LoginUserLoading) {
@@ -684,7 +684,7 @@ class RegistrationState extends State {
                                     },
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 18,
                                 ),
                                 Expanded(
@@ -1685,5 +1685,3 @@ class RegistrationState extends State {
     );
   }
 }
-
-///todo location addded or not

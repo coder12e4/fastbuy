@@ -2,7 +2,6 @@ import 'package:fastbuy/admin/adminModels/addProductModel/addproduct.dart';
 import 'package:fastbuy/user/userCubit/Kart_cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../Models/Cartmodel.dart';
 
 class CartPage extends StatefulWidget {
@@ -81,7 +80,7 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(14),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -169,13 +168,13 @@ class _CartPageState extends State<CartPage> {
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Center(
                           child: Text("Booking Success"),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(14),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

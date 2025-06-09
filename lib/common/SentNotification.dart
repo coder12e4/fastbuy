@@ -43,9 +43,9 @@ class SentNotifications {
       if (response.statusCode == 200) {
         await saveNotificationToFirestore(orderModel!);
         // await getCartByUserIdAndClear(order.userId);
-        print('Notification sent to user');
       } else {
         print(response.body);
+        print("notification senting failed");
       }
     } catch (e) {
       rethrow;

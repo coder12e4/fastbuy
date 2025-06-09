@@ -1,12 +1,7 @@
-import 'dart:convert';
 import 'package:fastbuy/admin/adminModels/addProductModel/addproduct.dart';
-import 'package:http/http.dart' as http;
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../admin/cubit/homeAdmin/home_admin_cubit.dart';
 import '../SentNotification.dart';
 
 part 'order_item_state.dart';
@@ -30,17 +25,13 @@ class OrderItemCubit extends Cubit<OrderItemState> {
             .collection('users') // Replace with your collection name
             .where("userId", isEqualTo: marchantId)
             .get();
-        //kart state must be change
-        var sellerDoc = documentSnapshot.docs.first;
-        sellerfcm = sellerDoc['selectedSeller']['sellerfcm'];
+        sellerfcm = documentSnapshot.docs.first['selectedSeller']['sellerfcm'];
       } else {
         final documentSnapshot = await FirebaseFirestore.instance
             .collection('users') // Replace with your collection name
             .where("userId", isEqualTo: orderModel!.userId)
             .get();
-        //kart state must be change
-        var userDoc = documentSnapshot.docs.first;
-        sellerfcm = userDoc['userFcm'];
+        sellerfcm = documentSnapshot.docs.first['userFcm'];
       }
 
       SentNotifications sentNotifications =
@@ -55,10 +46,7 @@ class OrderItemCubit extends Cubit<OrderItemState> {
         'updatedAt': DateTime.now(), // Optional: track when status changed
       });
       upDateStatus(newStatus);
-      print('Order status updated successfully');
-    } catch (e) {
-      print('Failed to update order status: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> upDateStatus(String status) async {

@@ -116,8 +116,6 @@ class HomeUserCubit extends Cubit<HomeUserState> {
   }
 
   void loadProductsformSearch(String searchQuery, String? sellerId) async {
-    print("sellerId" + sellerId!);
-    print("productname" + searchQuery!);
     try {
       List<Product> list = [];
       emit(HomeUserProductsLoading());
@@ -132,13 +130,8 @@ class HomeUserCubit extends Cubit<HomeUserState> {
       list = querySnapshot.docs.map((doc) {
         return Product.fromMap(doc.data() as Map<String, dynamic>, doc.id);
       }).toList();
-      print('product list lenth');
-      print(list.length);
       emit(HomeUserProductsSuc(list));
     } catch (e) {
-      print('Error occurred: $e');
-
-      // Check if error is related to Firestore indexing
       if (e is FirebaseException && e.message != null) {
         final errorMessage = e.message!;
         if (errorMessage.contains('FAILED_PRECONDITION') &&

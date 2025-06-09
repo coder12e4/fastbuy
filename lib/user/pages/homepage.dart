@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:fastbuy/user/pages/Profile/ProfilePage.dart';
 import 'package:fastbuy/user/pages/loginpage.dart';
-import 'package:fastbuy/user/pages/productview.dart';
 import 'package:fastbuy/user/userCubit/Kart_cubit/cart_cubit.dart';
 import 'package:fastbuy/user/userCubit/homeUserCubit/home_user_cubit.dart';
 import 'package:fastbuy/user/userCubit/subcategories/cubit/subcategories_cubit.dart';
@@ -182,7 +181,7 @@ class DropdownDialog extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("G",
+                        const Text("G",
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         DropdownButton<int>(
@@ -241,7 +240,7 @@ class DropdownDialog extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -252,7 +251,8 @@ class DropdownDialog extends StatelessWidget {
                   ),
                   Text(
                     "${totalQuantity.toStringAsFixed(6)} kg",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -267,7 +267,234 @@ class DropdownDialog extends StatelessWidget {
                   ),
                   Text(
                     total.toStringAsFixed(2),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+          );
+        },
+      ),
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                cart
+                    .addproductToKart(userId, product, total.toString(),
+                        totalQuantity.toString())
+                    .then((value) {
+                  homeUserCubit.fetchCategories(sellerId, userId);
+                }).then((value) {
+                  Navigator.of(context).pop();
+                });
+              },
+              child: const Text('Add to Cart'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class ShowDialougeOfCount extends StatelessWidget {
+  final Product product;
+  final CartCubit cart;
+  final HomeUserCubit homeUserCubit;
+  final String userId;
+  final String sellerId;
+
+  ShowDialougeOfCount(
+      this.product, this.cart, this.userId, this.homeUserCubit, this.sellerId);
+
+  @override
+  Widget build(BuildContext context) {
+    double quantityKg = 0;
+    double quantityG = 0;
+    double quantityMg = 0;
+
+    double totalPriceInKg = 0.0;
+    double totalPriceInG = 0.0;
+    double totalPriceInMg = 0.0;
+    double total = 0.0;
+    double totalQuantity = 0.0;
+
+    double calculate(double pricePerKg, String type, double value) {
+      if (type == "Count") {
+        totalPriceInKg = value * pricePerKg;
+      }
+      return total;
+    }
+
+    return AlertDialog(
+      title: Center(child: Text(product.name)),
+      content: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 140,
+                width: MediaQuery.of(context).size.width,
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        product.image,
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                    Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          width: 80,
+                          height: 40,
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20))),
+                          child: Text(
+                            "${product.Discount}% off",
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Price:',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${product.price.toStringAsFixed(2)}/kg',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' ${product.PriceAfterDiscount}/kg',
+                          style: const TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Discount Price',
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    "${double.parse(product.PriceAfterDiscount).toStringAsFixed(2)}/kg",
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                margin: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Count",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                        DropdownButton<int>(
+                          value: quantityKg.toInt(),
+                          items: List.generate(100, (index) => index)
+                              .map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              quantityKg = newValue!.toDouble();
+                              total = calculate(
+                                  double.parse(product.PriceAfterDiscount),
+                                  "Count",
+                                  quantityKg);
+                              /*totalQuantity = calculateTotalQuantity(
+                                  quantityKg, quantityG, quantityMg);*/
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Total Quantity:',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "${totalQuantity.toStringAsFixed(6)} kg",
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Total Price:',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    total.toStringAsFixed(2),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   )
                 ],
               ),
@@ -529,7 +756,7 @@ class _HomePageUserState extends State<HomePageUser> {
                   onTap: () {
                     homeUserCubit.logout().then((t) =>
                         Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (c) => Login())));
+                            MaterialPageRoute(builder: (c) => const Login())));
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -571,9 +798,9 @@ class _HomePageUserState extends State<HomePageUser> {
                 )),
             title: Row(
               children: [
-                Text(
+                const Text(
                   "Hi",
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                   ),
                 ),
@@ -680,7 +907,6 @@ class _HomePageUserState extends State<HomePageUser> {
                   listProducts.clear();
                   listProducts = state.products;
 
-                  int? k = cartCubit.kartLength;
                   isGridView = false;
                   isGridViewSubCategory = false;
                 } else if (state is HomeUserProductsFail) {
@@ -782,8 +1008,10 @@ class _HomePageUserState extends State<HomePageUser> {
                                                               .id);
                                                 },
                                                 child: Container(
-                                                  padding: EdgeInsets.all(4),
-                                                  margin: EdgeInsets.all(4),
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  margin:
+                                                      const EdgeInsets.all(4),
                                                   decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -1081,7 +1309,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                               listCategoris[index].id);
                                         },
                                         child: Container(
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               left: 14,
                                               right: 14,
                                               top: 4,
@@ -1246,7 +1474,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 listCategoris[index].id);
                                           },
                                           child: Container(
-                                            margin: EdgeInsets.only(
+                                            margin: const EdgeInsets.only(
                                                 left: 14,
                                                 right: 14,
                                                 top: 4,
@@ -1273,11 +1501,11 @@ class _HomePageUserState extends State<HomePageUser> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 4,
                                               ),
                                               Text(listCategoris[index].name,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 12,
                                                       fontWeight:
@@ -1411,7 +1639,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 listCategoris[index].id);
                                           },
                                           child: Container(
-                                            margin: EdgeInsets.only(
+                                            margin: const EdgeInsets.only(
                                                 left: 14,
                                                 right: 14,
                                                 top: 4,
@@ -1485,7 +1713,7 @@ class _HomePageUserState extends State<HomePageUser> {
 
                             // Animated Container
                             AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                               height: isGridViewSubCategory
                                   ? ((listSubCategoris.length + 3) ~/ 4) * 100
@@ -1538,7 +1766,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
@@ -1597,7 +1825,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
@@ -1620,7 +1848,7 @@ class _HomePageUserState extends State<HomePageUser> {
                       ],
                     );
                   } else if (state is HomeUsersubCategoryProductsFail) {
-                    return Center(
+                    return const Center(
                       child: Text("subcategoryloading failed"),
                     );
                   } else if (state is HomeUserProductsLoading) {
@@ -1769,11 +1997,11 @@ class _HomePageUserState extends State<HomePageUser> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 4,
                                               ),
                                               Text(listCategoris[index].name,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 12,
                                                       fontWeight:
@@ -1844,7 +2072,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -1875,7 +2103,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -1903,7 +2131,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -1928,7 +2156,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
@@ -2069,7 +2297,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 listCategoris[index].id);
                                           },
                                           child: Container(
-                                            margin: EdgeInsets.only(
+                                            margin: const EdgeInsets.only(
                                                 left: 14,
                                                 right: 14,
                                                 top: 4,
@@ -2096,11 +2324,11 @@ class _HomePageUserState extends State<HomePageUser> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 4,
                                               ),
                                               Text(listCategoris[index].name,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 12,
                                                       fontWeight:
@@ -2143,7 +2371,7 @@ class _HomePageUserState extends State<HomePageUser> {
 
                             // Animated Container
                             AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                               height: isGridViewSubCategory
                                   ? ((listSubCategoris.length + 3) ~/ 4) * 100
@@ -2171,7 +2399,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                           .id);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(children: [
                                                 Container(
                                                   width: 60,
@@ -2196,13 +2424,13 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
                                                     listSubCategoris[index]
                                                         .name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontWeight:
@@ -2255,7 +2483,7 @@ class _HomePageUserState extends State<HomePageUser> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 4,
                                                 ),
                                                 Text(
@@ -2288,21 +2516,41 @@ class _HomePageUserState extends State<HomePageUser> {
                             ),
                             itemBuilder: (context, index) {
                               if (listProducts.isEmpty) {
-                                return EmptyOrAlert(empty: true);
+                                return const EmptyOrAlert(empty: true);
                               } else {
                                 return GestureDetector(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return DropdownDialog(
-                                            listProducts[index],
-                                            cartCubit,
-                                            userId,
-                                            homeUserCubit,
-                                            sellerId!);
-                                      },
-                                    );
+                                    if (listProducts[index].QuantityType ==
+                                        "Count") {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return ShowDialougeOfCount(
+                                              listProducts[index],
+                                              cartCubit,
+                                              userId,
+                                              homeUserCubit,
+                                              sellerId!);
+                                        },
+                                      );
+                                    } else if (listProducts[index]
+                                            .QuantityType ==
+                                        "Kg") {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return DropdownDialog(
+                                              listProducts[index],
+                                              cartCubit,
+                                              userId,
+                                              homeUserCubit,
+                                              sellerId!);
+                                        },
+                                      );
+                                    } else if (listProducts[index]
+                                            .QuantityType ==
+                                        "Litre") {
+                                    } else {}
                                   },
                                   child: SizedBox(
                                     height:
@@ -2335,14 +2583,14 @@ class _HomePageUserState extends State<HomePageUser> {
                                                 const SizedBox(height: 4),
                                                 Text(
                                                   listProducts[index].name,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black),
                                                 ),
                                                 Text(
                                                   listProducts[index]
                                                       .price
                                                       .toString(),
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black),
                                                 ),
                                               ],
@@ -2387,10 +2635,8 @@ class _HomePageUserState extends State<HomePageUser> {
                       ],
                     );
                   } else if (state is HomeUserProductsFail) {
-                    return Container(
-                      child: Center(
-                        child: ErrorWidget(state.error),
-                      ),
+                    return Center(
+                      child: ErrorWidget(state.error),
                     );
                   } else if (state is UserOrderLoading) {
                     return const Center(
@@ -2408,10 +2654,8 @@ class _HomePageUserState extends State<HomePageUser> {
                       child: ErrorWidget("error"),
                     );
                   } else {
-                    return Container(
-                      child: Center(
-                        child: ErrorWidget("error"),
-                      ),
+                    return Center(
+                      child: ErrorWidget("error"),
                     );
                   }
                 },

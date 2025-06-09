@@ -67,14 +67,22 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order Date: ${widget.order.createdAt}',
+                    'Order : ${widget.order.createdAt}',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                      'Total Price: \$${widget.order.kartModel.fold(0, (sum, products) => sum + products.product.price.round())}'),
-                  Text('Updated At: ${widget.order.updatedAt}'),
+                    'Total Price: \$${widget.order.kartModel.fold(0, (sum, products) => sum + products.product.price.round())}',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'Updated At: ${widget.order.updatedAt}',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8.0),
                   BlocBuilder<OrderItemCubit, OrderItemState>(
                     bloc: orderItemCubit,
@@ -89,7 +97,12 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             widget.Isuser
-                                ? Text('Order Status: ${widget.order.status}')
+                                ? Text(
+                                    'Order Status  : ${widget.order.status}',
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  )
                                 : Center(
                                     child: DropdownButton<String>(
                                       value: selectedStatus,
@@ -208,41 +221,61 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                       }
                     },
                   ),
+                  const SizedBox(height: 8.0),
                   const Text(
-                    'Products:',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    'Products :',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Column(
                     children: widget.order.kartModel.map((product) {
-                      return Row(
-                        children: [
-                          // Display product image
-                          Image.network(
-                            product.product.image,
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8.0),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${product.product.name} (\$${product.product.price.toStringAsFixed(2)})',
-                                style: const TextStyle(fontSize: 14),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8, top: 8),
+                        child: Row(
+                          children: [
+                            // Display product image
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8)),
+                              child: Image.network(
+                                product.product.image,
+                                height: 60,
+                                width: 60,
+                                fit: BoxFit.cover,
                               ),
-                              Text(
-                                'Price:  (\$${product.product.price.toStringAsFixed(2)})',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              Text(
-                                'Quantity: ${product.quantity}',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          )
-                        ],
+                            ),
+                            const SizedBox(width: 12.0),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${product.product.name} ${product.product.price.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  'Quantity : ${product.quantity}',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  'Price      :  ${product.product.price.toStringAsFixed(2)} ',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       );
                     }).toList(),
                   ),

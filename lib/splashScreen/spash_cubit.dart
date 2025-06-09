@@ -19,7 +19,6 @@ class SpashCubit extends Cubit<SpashState> {
     emit(SpashLoding());
     try {
       final islogins = await authCubit.getBool('islogin');
-
       if (islogins != null && islogins) {
         // Execute multiple asynchronous tasks in parallel
         final results = await Future.wait([
@@ -68,16 +67,14 @@ class SpashCubit extends Cubit<SpashState> {
       // Check if the seller exists
       if (sellerQuery.docs.isNotEmpty) {
         // Update the FCM token for the seller
-        final docRef = sellerQuery.docs.first.reference;
-        await docRef.update({'sellerfcm': fcm});
-
+        //final docRef = sellerQuery.docs.first.reference;
+        await sellerQuery.docs.first.reference.update({'sellerfcm': fcm});
         // Emit success with the person ID
         emit(SpashAdminSuccess(person.id));
       } else {
         emit(SpashError()); // Emit error if no seller found
       }
     } catch (e) {
-      debugPrint("Error in getLoginYourShop: $e");
       emit(SpashError()); // Emit error on failure
     }
   }
@@ -138,7 +135,6 @@ class SpashCubit extends Cubit<SpashState> {
       String? username) async {
     try {
       final userPref = await SharedPreferences.getInstance();
-
       // Collect all key-value pairs into a map
       final userData = {
         "userPref": userId ?? "",
@@ -149,7 +145,6 @@ class SpashCubit extends Cubit<SpashState> {
         "password321": password ?? "",
         "username321": username ?? "",
       };
-
       // Add seller-specific data if userType is true
       if (userType == true) {
         userData.addAll({
