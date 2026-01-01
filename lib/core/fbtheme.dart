@@ -12,7 +12,7 @@ class FbTheme {
       scaffoldBackgroundColor: Colors.white,
       elevatedButtonTheme: fbelevatedbuttontheme.lightthem,
       inputDecorationTheme: FbTxtfieldTheme.lightinputDecorationTheme,
-      cardTheme: const CardTheme(color: Colors.white));
+      );
 
   static ThemeData darkTheme = ThemeData(
       useMaterial3: true,
@@ -22,7 +22,7 @@ class FbTheme {
       scaffoldBackgroundColor: Colors.black,
       elevatedButtonTheme: fbelevatedbuttontheme.Darkthem,
       inputDecorationTheme: FbTxtfieldTheme.darkinputDecorationTheme,
-      cardTheme: const CardTheme(color: Colors.black));
+      );
 }
 
 class fbTextTheme {

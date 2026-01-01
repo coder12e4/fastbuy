@@ -1,1 +1,0 @@
-/home/zeocodes/AndroidStudioProjects/fastbuy/build/app/intermediates/cxx/RelWithDebInfo/2s6f1k26/obj/x86

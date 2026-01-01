@@ -1,2 +1,0 @@
-/home/zeocodes/AndroidStudioProjects/fastbuy/android/app/.cxx/RelWithDebInfo/2s6f1k26/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/zeocodes/AndroidStudioProjects/fastbuy/android/app/.cxx/RelWithDebInfo/2s6f1k26/armeabi-v7a/CMakeFiles/rebuild_cache.dir

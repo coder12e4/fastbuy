@@ -16,6 +16,7 @@ import 'core/fbtheme.dart';
 import 'localisation/app_localizations.dart';
 import 'localisation/cubit/locale_cubit.dart';
 import 'notification/notification.dart';
+import 'splashScreen/splashscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

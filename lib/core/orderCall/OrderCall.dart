@@ -1,3 +1,4 @@
+/*
 // call_manager.dart
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
@@ -47,3 +48,4 @@ class CallManager {
 
   Map<String, dynamic>? getCurrentCallData() => _currentCallData;
 }
+*/
